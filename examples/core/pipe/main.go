@@ -4,11 +4,11 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/TobiasGleiter/langchain-go/core/input"
-	"github.com/TobiasGleiter/langchain-go/core/models"
-	"github.com/TobiasGleiter/langchain-go/core/models/llms/ollama"
-	"github.com/TobiasGleiter/langchain-go/core/output"
-	"github.com/TobiasGleiter/langchain-go/core/pipe"
+	"github.com/bit8bytes/gogantic/core/input"
+	"github.com/bit8bytes/gogantic/core/models"
+	"github.com/bit8bytes/gogantic/core/models/llms/ollama"
+	"github.com/bit8bytes/gogantic/core/output"
+	"github.com/bit8bytes/gogantic/core/pipe"
 )
 
 func main() {

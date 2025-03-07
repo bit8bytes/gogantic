@@ -1,6 +1,6 @@
 # Interacting with LLMs in Go has never been easier.
 
-Roadmap (using local models only):
+Roadmap (using local models only) without external dependencies:
 
 1. Build core (1) components to interact with large language models
 2. Create an Agent (2) that can inetract with the outside world using tools

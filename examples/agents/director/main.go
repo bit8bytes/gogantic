@@ -9,35 +9,35 @@ import (
 	"github.com/bit8bytes/gogantic/core/models/llms/ollama"
 )
 
-type GetTime struct{}
+type TimeAgent struct{}
 
 func main() {
-	wizardlm2_7b := ollama.OllamaModel{
+	mistral_latest := ollama.OllamaModel{
 		Model:   "mistral:latest",
 		Options: ollama.ModelOptions{NumCtx: 4096},
 		Stream:  false,
 		Stop:    []string{"\nObservation", "Observation"},
 	}
-	llm := ollama.NewOllamaClient(wizardlm2_7b)
+	llm := ollama.NewOllamaClient(mistral_latest)
 
 	tools := map[string]agents.Tool{
-		"GetTime": GetTime{},
+		"TimeAgent": TimeAgent{},
 	}
 
-	timeAgent := agents.NewAgent(llm, tools)
-	timeAgent.Task("What time is it?")
+	directorAgent := agents.NewAgent(llm, tools)
+	directorAgent.Task("What time is it?")
 
 	ctx := context.TODO()
-	executor := agents.NewExecutor(timeAgent, agents.WithShowMessages())
+	executor := agents.NewExecutor(directorAgent, agents.WithShowMessages())
 	executor.Run(ctx)
 
-	finalAnswer, _ := timeAgent.GetFinalAnswer()
+	finalAnswer, _ := directorAgent.GetFinalAnswer()
 	fmt.Println(finalAnswer)
 }
 
-func (t GetTime) Name() string { return "GetTime" }
+func (t TimeAgent) Name() string { return "TimeAgent" }
 
-func (t GetTime) Call(ctx context.Context, input string) (string, error) {
+func (t TimeAgent) Call(ctx context.Context, input string) (string, error) {
 	currentTime := time.Now()
 	fmtCurrentTime := currentTime.Format("2006-01-02 3:04:05 PM")
 	return fmtCurrentTime, nil

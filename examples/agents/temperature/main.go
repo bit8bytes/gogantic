@@ -40,7 +40,7 @@ func main() {
 
 	executor := agents.NewExecutor(weatherAgent,
 		agents.WithIterationLimit(20),
-		agents.WithPrintMessages())
+		agents.WithShowMessages())
 	executor.Run(ctx)
 
 	finalAnswer, _ := weatherAgent.GetFinalAnswer()

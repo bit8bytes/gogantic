@@ -19,7 +19,7 @@ func WithIterationLimit(limit int) ExecutorOption {
 	}
 }
 
-func WithPrintMessages() ExecutorOption {
+func WithShowMessages() ExecutorOption {
 	return func(e *Executor) {
 		e.printMessages = true
 	}
@@ -66,8 +66,4 @@ func (e *Executor) Run(ctx context.Context) {
 			fmt.Println(Green + observation + Reset)
 		}
 	}
-}
-
-func (e *Executor) PrintMessages() {
-	e.printMessages = true
 }

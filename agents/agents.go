@@ -12,10 +12,11 @@ import (
 )
 
 type Agent struct {
-	Model    models.Model
-	Tools    map[string]Tool
-	Messages []models.MessageContent
-	Actions  []AgentAction
+	Model           models.Model
+	Tools           map[string]Tool
+	Messages        []models.MessageContent
+	Actions         []AgentAction
+	initialMessages []models.MessageContent
 }
 
 func NewAgent(model models.Model, tools map[string]Tool) *Agent {
@@ -29,6 +30,7 @@ func NewAgent(model models.Model, tools map[string]Tool) *Agent {
 	}
 }
 
+// Sets the task the agent is going to execute
 func (a *Agent) Task(prompt string) {
 	chatPrompt, _ := input.NewChatPromptTemplate([]models.MessageContent{
 		{Role: "user", Content: `
@@ -49,6 +51,7 @@ Question: {{.input}}
 	a.Messages = append(a.Messages, formattedMessages...)
 }
 
+// Identifies the generated messages and splits them into thought, action and action input
 func (a *Agent) Plan(ctx context.Context) (AgentResponse, error) {
 	generatedContent, err := a.Model.GenerateContent(ctx, a.Messages)
 	if err != nil {
@@ -118,6 +121,7 @@ func (a *Agent) Plan(ctx context.Context) (AgentResponse, error) {
 	return AgentResponse{Finish: false}, nil
 }
 
+// Uses the given tools to get observations
 func (a *Agent) Act(ctx context.Context) {
 	for _, action := range a.Actions {
 		if !a.handleAction(ctx, action) {
@@ -127,6 +131,7 @@ func (a *Agent) Act(ctx context.Context) {
 	a.clearActions()
 }
 
+// Handle action is a helper function that calls the tool selected by the LLM and adds the observation output
 func (a *Agent) handleAction(ctx context.Context, action AgentAction) bool {
 	tool, exists := a.Tools[action.Tool]
 	if !exists {
@@ -158,22 +163,6 @@ func (a *Agent) GetFinalAnswer() (string, error) {
 		return "", errors.New("Invalid final answer")
 	}
 	return parts[1], nil
-}
-
-func (a *Agent) CheckIfFinalAnswer(input string) (AgentResponse, error) {
-	if strings.Contains(input, "FINAL ANSWER:") {
-		finalAnswerParts := strings.Split(input, "FINAL ANSWER:")
-		finalAnswer := strings.TrimSpace(finalAnswerParts[1])
-
-		a.Messages = append(a.Messages, models.MessageContent{
-			Role:    "assistant",
-			Content: fmt.Sprintf("\nFinal Answer: %s", finalAnswer),
-		})
-
-		return AgentResponse{Finish: true}, nil
-	}
-
-	return AgentResponse{Finish: false}, nil
 }
 
 func setupReActPromptInitialMessages(tools string) []models.MessageContent {

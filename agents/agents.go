@@ -75,11 +75,11 @@ func (a *Agent) Plan(ctx context.Context) (AgentResponse, error) {
 	reThought := regexp.MustCompile(`(?i)Thought:\s*(.*?)(?:\s*(?:Action:|FINAL ANSWER:|$))`)
 	thought := reThought.FindStringSubmatch(text)
 
-	// Extract action - look for format like "Action: [ToolName]"
+	// "Action: [ToolName]"
 	reAction := regexp.MustCompile(`Action:\s*\[(.*?)\]`)
 	action := reAction.FindStringSubmatch(text)
 
-	// Extract action input - look for format like "Action Input: "input""
+	// "Action Input: "input"
 	reInput := regexp.MustCompile(`Action Input:\s*"(.*?)"`)
 	actionInput := reInput.FindStringSubmatch(text)
 
@@ -89,12 +89,10 @@ func (a *Agent) Plan(ctx context.Context) (AgentResponse, error) {
 		actionInput = reInput.FindStringSubmatch(text)
 	}
 
-	// Process thought
 	if len(thought) > 1 {
 		a.addThoughtMessage(strings.TrimSpace(thought[1]))
 	}
 
-	// Process action and action input
 	if len(action) > 1 {
 		a.addActionMessage("[" + action[1] + "]")
 
@@ -113,8 +111,6 @@ func (a *Agent) Plan(ctx context.Context) (AgentResponse, error) {
 			},
 		}
 	} else {
-		// If no action is found but we're not at final answer,
-		// add a note for debugging
 		fmt.Println("Warning: No action found in response")
 	}
 

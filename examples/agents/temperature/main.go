@@ -9,24 +9,20 @@ import (
 	"github.com/bit8bytes/gogantic/core/models/llms/ollama"
 )
 
-// Implemented tools at the bottom of this file
 type CurrentDatetime struct{}
 type CurrentTemperatureInFahrenheit struct{}
 type FormatFahrenheitToCelsius struct{}
 type SaveToFile struct{}
 
 func main() {
-	// Agent need a llm and tools
-	// Agent Executor iterates 10 times that the agent can solve the task.
-	// Currently the agent works with the ReAct Prompt Pattern
-	phi3 := ollama.OllamaModel{
-		Model:     "mistral:latest", // This is the best working model from ollama, currently.
+	mistral_latest := ollama.OllamaModel{
+		Model:     "mistral:latest",
 		Options:   ollama.ModelOptions{NumCtx: 4096},
 		Stream:    false,
 		KeepAlive: -1,
 		Stop:      []string{"\nObservation", "Observation"}, // Necessary due to the ReAct Prompt Pattern
 	}
-	llm := ollama.NewOllamaClient(phi3)
+	llm := ollama.NewOllamaClient(mistral_latest)
 
 	tools := map[string]agents.Tool{
 		"CurrentTemperatureInFahrenheit": CurrentTemperatureInFahrenheit{},
@@ -47,13 +43,13 @@ func main() {
 	fmt.Println(finalAnswer)
 }
 
-// Implementation of the tools!
-// Tools follow the tools interface with Name and Call.
 func (t CurrentTemperatureInFahrenheit) Name() string {
 	return "CurrentTemperatureInFahrenheit"
 }
 
 func (t CurrentTemperatureInFahrenheit) Call(ctx context.Context, input string) (string, error) {
+	// This is only for showcase.
+	// If you want to use this and handle input e.g. location look at the math agent example.
 	return fmt.Sprintf("5.54°F"), nil
 }
 
@@ -62,6 +58,7 @@ func (t FormatFahrenheitToCelsius) Name() string {
 }
 
 func (t FormatFahrenheitToCelsius) Call(ctx context.Context, input string) (string, error) {
+	// Still, I do not handle errors in here. This has to be done through testing.
 	fahrenheit, _ := strconv.ParseFloat(input, 64)
 	celsius := (fahrenheit - 32) * (5.0 / 9.0)
 	return fmt.Sprintf("Current temperature: %.2f°C", celsius), nil

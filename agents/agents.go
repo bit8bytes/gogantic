@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"regexp"
 	"strings"
 
 	"github.com/bit8bytes/gogantic/core/input"
@@ -60,45 +59,35 @@ func (a *Agent) Plan(ctx context.Context) (AgentResponse, error) {
 
 	text := generatedContent.Result
 
-	if strings.Contains(text, "FINAL ANSWER:") {
-		finalAnswerParts := strings.Split(text, "FINAL ANSWER:")
-		finalAnswer := strings.TrimSpace(finalAnswerParts[1])
-
+	final := extractAfterLabel(text, "FINAL ANSWER:")
+	if len(final) > 0 {
 		a.Messages = append(a.Messages, models.MessageContent{
 			Role:    "assistant",
-			Content: fmt.Sprintf("\nFinal Answer: %s", finalAnswer),
+			Content: fmt.Sprintf("\nFinal Answer: %s", final),
 		})
 
 		return AgentResponse{Finish: true}, nil
 	}
 
-	reThought := regexp.MustCompile(`(?i)Thought:\s*(.*?)(?:\s*(?:Action:|FINAL ANSWER:|$))`)
-	thought := reThought.FindStringSubmatch(text)
+	thought := extractAfterLabel(text, "Thought: ")
 
 	// "Action: [ToolName]"
-	reAction := regexp.MustCompile(`Action:\s*\[(.*?)\]`)
-	action := reAction.FindStringSubmatch(text)
+	action := extractAfterLabel(text, "Action: ")
 
 	// "Action Input: "input"
-	reInput := regexp.MustCompile(`Action Input:\s*"(.*?)"`)
-	actionInput := reInput.FindStringSubmatch(text)
-
-	// Handle alternative input format without quotes
-	if len(actionInput) <= 1 {
-		reInput = regexp.MustCompile(`Action Input:\s*(.*?)(?:\n|$)`)
-		actionInput = reInput.FindStringSubmatch(text)
-	}
+	actionInput := extractAfterLabel(text, "Action Input: ")
 
 	if len(thought) > 1 {
-		a.addThoughtMessage(strings.TrimSpace(thought[1]))
+		a.addThoughtMessage(strings.TrimSpace(thought))
 	}
 
 	if len(action) > 1 {
-		a.addActionMessage("[" + action[1] + "]")
+		tool := removeSquareBrackets(action)
+		a.addActionMessage(tool)
 
 		inputText := ""
 		if len(actionInput) > 1 {
-			inputText = actionInput[1]
+			inputText = removeQuotes(actionInput)
 			a.addActionInputMessage("\"" + inputText + "\"")
 		} else {
 			a.addActionInputMessage("\"\"")
@@ -106,7 +95,7 @@ func (a *Agent) Plan(ctx context.Context) (AgentResponse, error) {
 
 		a.Actions = []AgentAction{
 			{
-				Tool:      action[1],
+				Tool:      tool,
 				ToolInput: inputText,
 			},
 		}
@@ -194,4 +183,40 @@ Think in steps.
 	}
 
 	return formattedMessages
+}
+
+func extractAfterLabel(s, label string) string {
+	startIndex := strings.Index(s, label)
+	if startIndex == -1 {
+		return "" // Label not found
+	}
+	startIndex += len(label)
+	for startIndex < len(s) && s[startIndex] == ' ' {
+		startIndex++
+	}
+	endIndex := strings.Index(s[startIndex:], "\n")
+	if endIndex == -1 {
+		endIndex = len(s)
+	} else {
+		endIndex += startIndex
+	}
+
+	return s[startIndex:endIndex]
+}
+
+func removeSquareBrackets(s string) string {
+	s = strings.TrimSpace(s)
+	if len(s) >= 2 && s[0] == '[' && s[len(s)-1] == ']' {
+		return s[1 : len(s)-1]
+	}
+	return s
+}
+
+// removeQuotes removes surrounding quotes if present
+func removeQuotes(s string) string {
+	s = strings.TrimSpace(s)
+	if len(s) >= 2 && s[0] == '"' && s[len(s)-1] == '"' {
+		return s[1 : len(s)-1]
+	}
+	return s
 }

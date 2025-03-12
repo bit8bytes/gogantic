@@ -18,7 +18,7 @@ func main() {
 		Stream:  false,
 		Stop:    []string{"\nObservation", "Observation"},
 	}
-	llm := ollama.NewOllamaClient(wizardlm2_7b)
+	llm := ollama.New(wizardlm2_7b)
 
 	tools := map[string]agents.Tool{
 		"GetTime": GetTime{},

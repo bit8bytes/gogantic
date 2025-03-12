@@ -22,7 +22,7 @@ func main() {
 		KeepAlive: -1,
 		Stop:      []string{"\nObservation", "Observation"}, // Necessary due to the ReAct Prompt Pattern
 	}
-	llm := ollama.NewOllamaClient(mistral_latest)
+	llm := ollama.New(mistral_latest)
 
 	tools := map[string]agents.Tool{
 		"CurrentTemperatureInFahrenheit": CurrentTemperatureInFahrenheit{},

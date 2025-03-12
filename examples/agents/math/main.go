@@ -20,7 +20,7 @@ func main() {
 		Stream:  false,
 		Stop:    []string{"\nObservation", "Observation"},
 	}
-	llm := ollama.NewOllamaClient(mistral_latest)
+	llm := ollama.New(mistral_latest)
 
 	tools := map[string]agents.Tool{
 		"Calculator": Calculator{},

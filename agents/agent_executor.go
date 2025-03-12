@@ -49,7 +49,6 @@ func (e *Executor) Run(ctx context.Context) {
 		}
 
 		if todos.Finish {
-			fmt.Println("Found final answer!")
 			break
 		}
 

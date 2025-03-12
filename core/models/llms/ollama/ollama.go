@@ -17,7 +17,7 @@ type OllamaClient struct {
 	Model OllamaModel
 }
 
-func NewOllamaClient(model OllamaModel) *OllamaClient {
+func New(model OllamaModel) *OllamaClient {
 	return &OllamaClient{Model: model}
 }
 

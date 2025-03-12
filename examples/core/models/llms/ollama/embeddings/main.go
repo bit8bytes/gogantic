@@ -21,7 +21,7 @@ func main() {
 		Stream:  false,
 	}
 
-	ollamaClient := ollama.NewOllamaClient(llama3_8b_model)
+	ollamaClient := ollama.New(llama3_8b_model)
 	generatedContent, _ := ollamaClient.GenerateEmbedding(context.Background(), companyNameFormattedPrompt)
 	fmt.Println(len(generatedContent.Embedding))
 	fmt.Println(generatedContent.Embedding[:3]) // First 3 bytes...

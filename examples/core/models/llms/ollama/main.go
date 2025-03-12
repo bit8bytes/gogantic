@@ -37,7 +37,7 @@ func main() {
 	}
 
 	// Create a new client with the model
-	ollamaClient := ollama.NewOllamaClient(llama3_8b_model)
+	ollamaClient := ollama.New(llama3_8b_model)
 	// Generate the content using the model based on the formatted messages.
 	generatedContent, _ := ollamaClient.GenerateContent(context.Background(), formattedMessages)
 	// Do something with the generated content...

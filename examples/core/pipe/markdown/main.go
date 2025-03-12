@@ -36,7 +36,7 @@ func main() {
 		Stream:  false,
 	}
 
-	ollamaClient := ollama.NewOllamaClient(llama3_8b_model)
+	ollamaClient := ollama.New(llama3_8b_model)
 	var parser output.OutputParser[map[string]string] = &output.MarkdownOutputParser{}
 
 	ctx := context.TODO()

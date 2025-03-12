@@ -14,7 +14,7 @@ type OpenAiClient struct {
 	Model Model
 }
 
-func NewOpenAiClient(model Model) *OpenAiClient {
+func New(model Model) *OpenAiClient {
 	return &OpenAiClient{
 		Model: model,
 	}
@@ -40,8 +40,8 @@ func (oc *OpenAiClient) GenerateContent(ctx context.Context, messages []models.M
 	if err != nil {
 		return models.ContentResponse{}, err
 	}
-	req.Header.Set("Authorization", "Bearer "+oc.Model.APIKey)
 	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Authorization", "Bearer "+oc.Model.APIKey)
 
 	resp, err := httpClient.Do(req)
 	if err != nil {

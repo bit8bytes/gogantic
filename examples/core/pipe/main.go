@@ -34,7 +34,7 @@ func main() {
 		Stream:  false,
 	}
 
-	ollamaClient := ollama.NewOllamaClient(llama3_8b_model)
+	ollamaClient := ollama.New(llama3_8b_model)
 	var parser output.OutputParser[[]string] = &output.SpaceSeparatedListOutputParser{}
 
 	ctx := context.TODO()

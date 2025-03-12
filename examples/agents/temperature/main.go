@@ -32,12 +32,10 @@ func main() {
 	weatherAgent := agents.NewAgent(llm, tools)
 	weatherAgent.Task("What is the temperature outside?")
 
-	ctx := context.TODO()
-
 	executor := agents.NewExecutor(weatherAgent,
-		agents.WithIterationLimit(20),
+		agents.WithIterationLimit(10),
 		agents.WithShowMessages())
-	executor.Run(ctx)
+	executor.Run(context.TODO())
 
 	finalAnswer, _ := weatherAgent.GetFinalAnswer()
 	fmt.Println(finalAnswer)
@@ -50,7 +48,7 @@ func (t CurrentTemperatureInFahrenheit) Name() string {
 func (t CurrentTemperatureInFahrenheit) Call(ctx context.Context, input string) (string, error) {
 	// This is only for showcase.
 	// If you want to use this and handle input e.g. location look at the math agent example.
-	return fmt.Sprintf("5.54°F"), nil
+	return fmt.Sprintf("15.54°F"), nil
 }
 
 func (t FormatFahrenheitToCelsius) Name() string {

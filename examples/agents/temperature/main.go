@@ -29,7 +29,7 @@ func main() {
 		"FormatFahrenheitToCelsius":      FormatFahrenheitToCelsius{},
 	}
 
-	weatherAgent := agents.NewAgent(llm, tools)
+	weatherAgent := agents.New(llm, tools)
 	weatherAgent.Task("What is the temperature outside?")
 
 	executor := agents.NewExecutor(weatherAgent,

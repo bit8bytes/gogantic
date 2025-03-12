@@ -28,7 +28,7 @@ func main() {
 
 	// The math agent does wild calculator calls. But at the end somehow it comes to an result.
 	// It depends on how the tool instrcuts the model to handle the input
-	mathAgent := agents.NewAgent(llm, tools)
+	mathAgent := agents.New(llm, tools)
 	mathAgent.Task("What is 22 * 13?")
 
 	ctx := context.TODO()

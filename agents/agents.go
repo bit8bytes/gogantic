@@ -19,7 +19,7 @@ type Agent struct {
 	initialMessages []models.MessageContent
 }
 
-func NewAgent(model models.Model, tools map[string]Tool) *Agent {
+func New(model models.Model, tools map[string]Tool) *Agent {
 	toolNames := getToolNames(tools)
 	initialMessages := setupReActPromptInitialMessages(toolNames)
 

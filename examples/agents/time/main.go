@@ -24,7 +24,7 @@ func main() {
 		"GetTime": GetTime{},
 	}
 
-	timeAgent := agents.NewAgent(llm, tools)
+	timeAgent := agents.New(llm, tools)
 	timeAgent.Task("What time is it?")
 
 	ctx := context.TODO()

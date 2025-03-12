@@ -38,7 +38,7 @@ func main() {
 	var parser output.OutputParser[[]string] = &output.SpaceSeparatedListOutputParser{}
 
 	ctx := context.TODO()
-	pipe := pipe.NewPipe(messages, ollamaClient, parser)
+	pipe := pipe.New(messages, ollamaClient, parser)
 	result, _ := pipe.Invoke(ctx)
 	fmt.Println(result)
 

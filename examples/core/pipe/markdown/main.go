@@ -40,7 +40,7 @@ func main() {
 	var parser output.OutputParser[map[string]string] = &output.MarkdownOutputParser{}
 
 	ctx := context.TODO()
-	pipe := pipe.NewPipe(messages, ollamaClient, parser)
+	pipe := pipe.New(messages, ollamaClient, parser)
 	result, _ := pipe.Invoke(ctx)
 
 	for heading, content := range result {

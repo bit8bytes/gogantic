@@ -18,7 +18,7 @@ You just have to prepare the messages, add a model and define the output (e.g. j
 
 ```go
 // This is not the full example. See 'examples/core/pipe'
-pipe := pipe.NewPipe(messages, ollamaClient, parser)
+pipe := pipe.New(messages, ollamaClient, parser)
 result, _ := pipe.Invoke(context.Background())
 fmt.Println("Translate from", result.InputLanguage, " to ", result.OutputLanguage)
 fmt.Println("Result: ", result.Text)

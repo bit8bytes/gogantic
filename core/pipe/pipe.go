@@ -13,7 +13,7 @@ type Pipe[T any] struct {
 	OutputParser output.OutputParser[T]
 }
 
-func NewPipe[T any](messages []models.MessageContent, model models.Model, outputParser output.OutputParser[T]) *Pipe[T] {
+func New[T any](messages []models.MessageContent, model models.Model, outputParser output.OutputParser[T]) *Pipe[T] {
 	return &Pipe[T]{
 		Messages:     messages,
 		Model:        model,

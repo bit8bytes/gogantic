@@ -43,7 +43,7 @@ func main() {
 	ollamaClient := ollama.NewOllamaClient(llama3_8b_model)
 	var parser output.OutputParser[Translation] = &output.JsonOutputParser[Translation]{}
 
-	pipe := pipe.NewPipe(messages, ollamaClient, parser)
+	pipe := pipe.New(messages, ollamaClient, parser)
 	// Invoke is going to add the the parser instructions to the prompt.
 	// The model generates the content and the parser parses the output then.
 	result, _ := pipe.Invoke(context.Background())

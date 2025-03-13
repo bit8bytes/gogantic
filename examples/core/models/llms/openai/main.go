@@ -37,6 +37,8 @@ func main() {
 	gpt_model := openai.Model{
 		Model:  "gpt-3.5-turbo",
 		APIKey: apiKey,
+		Stream: false,
+		Stop:   []string{"\nObservation", "Observation"},
 	}
 
 	openAiClient := openai.New(gpt_model)

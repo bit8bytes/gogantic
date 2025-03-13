@@ -14,7 +14,7 @@ type ContentResponse struct {
 }
 
 type EmbeddingResponse struct {
-	Embedding []float64 `json:"embedding"`
+	Embedding []float32 `json:"embedding"`
 }
 
 type Model interface {

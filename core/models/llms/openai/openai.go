@@ -12,21 +12,42 @@ import (
 	"github.com/bit8bytes/gogantic/core/models"
 )
 
+// OpenAiClient represents a client for interacting with the OpenAI API
 type OpenAiClient struct {
-	Model Model
+	Model      Model
+	HttpClient *http.Client
 }
 
-func New(model Model) *OpenAiClient {
-	return &OpenAiClient{
+// OpenAiClientOption defines a function type for configuring OpenAiClient
+type OpenAiClientOption func(*OpenAiClient)
+
+// WithCustomHttpClient allows setting a custom HTTP client
+func WithCustomHttpClient(httpClient *http.Client) OpenAiClientOption {
+	return func(c *OpenAiClient) {
+		c.HttpClient = httpClient
+	}
+}
+
+// New creates a new OpenAI client with the specified model and options
+func New(model Model, opts ...OpenAiClientOption) *OpenAiClient {
+	// Create client with default settings
+	client := &OpenAiClient{
 		Model: model,
+		HttpClient: &http.Client{
+			Timeout: 240 * time.Second,
+		},
 	}
+
+	// Apply any provided options
+	for _, opt := range opts {
+		opt(client)
+	}
+
+	return client
 }
 
+// GenerateContent sends a request to generate content based on the provided messages
 func (oc *OpenAiClient) GenerateContent(ctx context.Context, messages []models.MessageContent) (models.ContentResponse, error) {
-	httpClient := &http.Client{
-		Timeout: 240 * time.Second,
-	}
-
 	requestPayload := OpenAIRequest{
 		Model:       oc.Model.Model,
 		Messages:    messages,
@@ -44,17 +65,19 @@ func (oc *OpenAiClient) GenerateContent(ctx context.Context, messages []models.M
 	if err != nil {
 		return models.ContentResponse{}, err
 	}
+
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Authorization", "Bearer "+oc.Model.APIKey)
 
-	resp, err := httpClient.Do(req)
+	resp, err := oc.HttpClient.Do(req)
 	if err != nil {
 		return models.ContentResponse{}, err
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return models.ContentResponse{}, err
+		bodyBytes, _ := io.ReadAll(resp.Body)
+		return models.ContentResponse{}, errors.New("API error: " + string(bodyBytes))
 	}
 
 	var openAIResp OpenAIResponse
@@ -63,7 +86,7 @@ func (oc *OpenAiClient) GenerateContent(ctx context.Context, messages []models.M
 	}
 
 	if len(openAIResp.Choices) == 0 {
-		return models.ContentResponse{}, err
+		return models.ContentResponse{}, errors.New("no choices returned from API")
 	}
 
 	contentResponse := models.ContentResponse{
@@ -73,11 +96,8 @@ func (oc *OpenAiClient) GenerateContent(ctx context.Context, messages []models.M
 	return contentResponse, nil
 }
 
+// GenerateEmbedding sends a request to generate an embedding for the provided input
 func (oc *OpenAiClient) GenerateEmbedding(ctx context.Context, input string) (models.EmbeddingResponse, error) {
-	client := &http.Client{
-		Timeout: 240 * time.Second,
-	}
-
 	endpoint := "https://api.openai.com/v1/embeddings"
 
 	requestPayload := EmbeddingRequest{
@@ -99,7 +119,7 @@ func (oc *OpenAiClient) GenerateEmbedding(ctx context.Context, input string) (mo
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Authorization", "Bearer "+oc.Model.APIKey)
 
-	resp, err := client.Do(req)
+	resp, err := oc.HttpClient.Do(req)
 	if err != nil {
 		return models.EmbeddingResponse{}, errors.New("http request failed")
 	}
@@ -121,6 +141,5 @@ func (oc *OpenAiClient) GenerateEmbedding(ctx context.Context, input string) (mo
 		return models.EmbeddingResponse{}, errors.New("no embedding returned")
 	}
 
-	// Assuming your models.EmbeddingResponse just needs the embedding vector
 	return models.EmbeddingResponse{Embedding: embeddingResponse.Data[0].Embedding}, nil
 }

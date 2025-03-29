@@ -24,6 +24,8 @@ fmt.Println("Translate from", result.InputLanguage, " to ", result.OutputLanguag
 fmt.Println("Result: ", result.Text)
 ```
 
+Run ´go get github.com/bit8bytes/gogantic/core/pipe´ to install the pipe.
+
 ## 2. Agents
 
 `Tools -> Agent -> Executor -> Final Result`
@@ -45,6 +47,8 @@ executor.Run(context.TODO())
 finalAnswer, _ := weatherAgent.GetFinalAnswer()
 fmt.Println(finalAnswer)
 ```
+
+Run ´go get github.com/bit8bytes/gogantic/agents´ to install the agents.
 
 ## 3. Director Agents (Coming soon)
 

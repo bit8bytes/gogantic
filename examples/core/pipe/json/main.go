@@ -11,6 +11,8 @@ import (
 	"github.com/bit8bytes/gogantic/core/pipe"
 )
 
+// Please make sure to use the `json:"xxx"` behind the type.
+// It is necessary to the JSON converter
 type Translation struct {
 	Text           string `json:"text"`
 	InputLanguage  string `json:"inputLanguage"`

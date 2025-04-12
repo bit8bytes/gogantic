@@ -21,10 +21,12 @@ func main() {
 		log.Fatal("No OPENAI_API_KEY")
 	}
 
+	stream := false
+
 	text_embedding_ada_002 := openai.Model{
 		Model:  "text-embedding-ada-002",
 		APIKey: apiKey,
-		Stream: false,
+		Stream: &stream,
 	}
 
 	openaiClient := openai.New(text_embedding_ada_002)

@@ -22,11 +22,14 @@ func main() {
 		log.Fatal("No OPENAI_API_KEY")
 	}
 
+	stream := false
+	stop := []string{"\nObservation", "Observation"}
+
 	gpt_35_turbo := openai.Model{
 		Model:  "gpt-3.5-turbo",
 		APIKey: apiKey,
-		Stream: false,
-		Stop:   []string{"\nObservation", "Observation"},
+		Stream: &stream,
+		Stop:   &stop,
 	}
 
 	llm := openai.New(gpt_35_turbo)

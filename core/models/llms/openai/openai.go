@@ -49,11 +49,20 @@ func New(model Model, opts ...OpenAiClientOption) *OpenAiClient {
 // GenerateContent sends a request to generate content based on the provided messages
 func (oc *OpenAiClient) GenerateContent(ctx context.Context, messages []models.MessageContent) (models.ContentResponse, error) {
 	requestPayload := OpenAIRequest{
-		Model:       oc.Model.Model,
-		Messages:    messages,
-		Temperature: oc.Model.Temperature,
-		Stream:      oc.Model.Stream,
-		Stop:        oc.Model.Stop,
+		Model:    oc.Model.Model,
+		Messages: messages,
+	}
+
+	if oc.Model.Temperature != nil {
+		requestPayload.Temperature = *oc.Model.Temperature
+	}
+
+	if oc.Model.Stream != nil {
+		requestPayload.Stream = *oc.Model.Stream
+	}
+
+	if oc.Model.Stop != nil {
+		requestPayload.Stop = *oc.Model.Stop
 	}
 
 	requestBody, err := json.Marshal(requestPayload)

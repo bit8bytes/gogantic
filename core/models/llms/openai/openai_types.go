@@ -5,11 +5,11 @@ import (
 )
 
 type Model struct {
-	Model       string   `json:"model"`
-	APIKey      string   `json:"api_key"`
-	Temperature float32  `json:"temperature,omitempty"`
-	Stop        []string `json:"stop,omitempty"`
-	Stream      bool     `json:"stream,omitempty"`
+	Model       string    `json:"model"`
+	APIKey      string    `json:"api_key"`
+	Temperature *float32  `json:"temperature,omitempty"`
+	Stop        *[]string `json:"stop,omitempty"`
+	Stream      *bool     `json:"stream,omitempty"`
 }
 
 type OpenAIRequest struct {

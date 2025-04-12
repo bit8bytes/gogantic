@@ -15,9 +15,9 @@ type Model struct {
 type OpenAIRequest struct {
 	Model       string                  `json:"model"`
 	Messages    []models.MessageContent `json:"messages"`
-	Temperature float32                 `json:"temperature"`
-	Stop        []string                `json:"stop"`
-	Stream      bool                    `json:"stream"`
+	Temperature float32                 `json:"temperature,omitempty"`
+	Stop        []string                `json:"stop,omitempty"`
+	Stream      bool                    `json:"stream,omitempty"`
 }
 
 type OpenAIResponse struct {

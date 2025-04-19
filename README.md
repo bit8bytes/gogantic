@@ -1,6 +1,6 @@
 # Interacting with LLMs in Go has never been easier.
 
-![Gogantic logo](logo.png)
+![Gogantic logo](banner.png)
 
 Roadmap (using local models only) without external dependencies:
 

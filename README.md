@@ -1,5 +1,7 @@
 # Interacting with LLMs in Go has never been easier.
 
+![Gogantic logo](logo.png)
+
 Roadmap (using local models only) without external dependencies:
 
 1. Build core (1) components to interact with large language models
@@ -24,7 +26,7 @@ fmt.Println("Translate from", result.InputLanguage, " to ", result.OutputLanguag
 fmt.Println("Result: ", result.Text)
 ```
 
-Run ´go get github.com/bit8bytes/gogantic/core/pipe´ to install the pipe.
+Install using `go get github.com/bit8bytes/gogantic/core/pipe`
 
 ## 2. Agents
 
@@ -48,7 +50,7 @@ finalAnswer, _ := weatherAgent.GetFinalAnswer()
 fmt.Println(finalAnswer)
 ```
 
-Run ´go get github.com/bit8bytes/gogantic/agents´ to install the agents.
+Run `go get github.com/bit8bytes/gogantic/agents` to install the agents.
 
 ## 3. Director Agents (Coming soon)
 

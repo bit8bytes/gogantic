@@ -26,12 +26,17 @@ install: confirm
 examples/core/pipe:
 	go run ./examples/core/pipe
 
-## examples/agents/temperature: to get the temperature using a tool (temperature hardocded to 5.54F)
-.PHONY: examples/agents/temperature
-examples/agents/temperature:
-	go run ./examples/agents/temperature
+## examples/agents/ollama/temperature: to get the temperature using a tool (temperature hardocded to 5.54F)
+.PHONY: examples/agents/ollama/temperature
+examples/agents/ollama/temperature:
+	go run ./examples/agents/ollama/temperature
 
-## examples/agents/time: the agent accesses the local time of the device
-.PHONY: examples/agents/time
-examples/agents/time:
-	go run ./examples/agents/time
+## examples/agents/ollama/time: the agent accesses the local time of the device
+.PHONY: examples/agents/ollama/time
+examples/agents/ollama/time:
+	go run ./examples/agents/ollama/time
+
+## examples/agents/ollama/filesystem: the agent has access to the filesystem
+.PHONY: examples/agents/ollama/filesystem
+examples/agents/ollama/filesystem:
+	go run ./examples/agents/ollama/filesystem

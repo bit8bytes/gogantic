@@ -2,14 +2,16 @@
 
 This is Gogo the Giant Gopher.
 
-<img src="gogantic-mascot.png" alt="Gogantic Mascot" width="250"/>
+<p align="center">
+    <img src="gogantic-mascot.png" alt="Gogantic Mascot" width="250"/>
+</p>
 
 Gogo can help you using LLM's in Go(lang). Gogo doesn't use any external dependencies and help's speeds up your interaction with LLM's.
 
-## Roadmap
+## 🚴🏽‍♂️ Roadmap
 
-1. Build core (1) components to interact with large language models
-2. Create an Agent (2) that can inetract with the outside world using tools
+1. ✅ Build core (1) components to interact with large language models
+2. ✅ Create an Agent (2) that can inetract with the outside world using tools
 3. Create an Director Agent (3) that uses Agents as tools to manage complex tasks
 
 After this, implement large language models (OpenAI, Claude, ...) and use the fan-in pattern to execute agents in parallel.

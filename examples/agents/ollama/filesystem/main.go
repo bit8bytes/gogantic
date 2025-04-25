@@ -20,6 +20,7 @@ type FileParams struct {
 }
 
 type SaveToFile struct{}
+type OpenFile struct{}
 
 func main() {
 	mistral_latest := ollama.OllamaModel{
@@ -31,11 +32,12 @@ func main() {
 
 	llm := ollama.New(mistral_latest)
 	tools := map[string]agents.Tool{
+		"OpenFile":   OpenFile{},
 		"SaveToFile": SaveToFile{},
 	}
 
 	agent1 := agents.New(llm, tools)
-	agent1.Task("Save this text: Foo and Bar = (equals) Foobar to a file named foobar.txt")
+	agent1.Task("Open the file foobar.txt, add the sentence: I can edit files and save it to altered_foobar.txt")
 	executor1 := agents.NewExecutor(agent1, agents.WithShowMessages())
 
 	var wg sync.WaitGroup
@@ -52,9 +54,37 @@ func main() {
 	fmt.Println("Task completed")
 }
 
+type OpenFileParameter struct {
+	Filename string `json:"filename"`
+}
+
+func (c OpenFile) Name() string { return "OpenFile" }
+
+func (c OpenFile) Call(ctx context.Context, input string) (string, error) {
+	var params OpenFileParameter
+	if err := json.Unmarshal([]byte(input), &params); err != nil {
+		fmt.Println("JSON parsing error:", err)
+
+		if err := json.Unmarshal([]byte(input), &params); err != nil {
+			return "", errors.New(`please provide a valid JSON with a "filename" fields for tool "OpenFile"`)
+		}
+	}
+
+	content, err := os.ReadFile(params.Filename)
+	if err != nil {
+		return "", errors.New(`please provide a valid JSON with a "filename" fields for tool "OpenFile"`)
+	}
+
+	response := "The content of the file is " + string(content)
+
+	return response, nil
+}
+
 func (c SaveToFile) Name() string { return "SaveToFile" }
 
 func (c SaveToFile) Call(ctx context.Context, input string) (string, error) {
+	fmt.Println(input)
+
 	cleanedInput := strings.ReplaceAll(input, `\"`, `"`)
 	cleanedInput = strings.Trim(cleanedInput, `"`)
 

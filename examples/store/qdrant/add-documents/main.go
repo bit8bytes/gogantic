@@ -9,6 +9,7 @@ import (
 	"github.com/bit8bytes/gogantic/core/models/llms/ollama"
 	"github.com/bit8bytes/gogantic/store"
 	"github.com/bit8bytes/gogantic/store/qdrant"
+	"github.com/google/uuid"
 )
 
 func main() {
@@ -45,10 +46,12 @@ func main() {
 
 	docs := []store.Document{
 		{
+			ID:       uuid.NewString(),
 			Content:  "Take a leisurely walk in the park and enjoy the fresh air.",
 			Metadata: map[string]any{"content": "Take a leisurely walk in the park and enjoy the fresh air."},
 		},
 		{
+			ID:       uuid.NewString(),
 			Content:  "Visit a local museum and discover something new.",
 			Metadata: map[string]any{"content": "Visit a local museum and discover something new."},
 		},

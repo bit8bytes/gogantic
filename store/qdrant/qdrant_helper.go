@@ -11,7 +11,6 @@ import (
 	"maps"
 
 	"github.com/bit8bytes/gogantic/store"
-	"github.com/google/uuid"
 )
 
 func (qs *QdrantStore) sendHttpRequestWithContext(ctx context.Context, method, url string, payload any, response any) error {
@@ -76,9 +75,5 @@ func (qs *QdrantStore) createMetadatas(docs []store.Document) []map[string]any {
 }
 
 func (qs *QdrantStore) createUpsertPointIds(docs []store.Document) []ID {
-	ids := make([]ID, len(docs))
-	for i := range ids {
-		ids[i] = uuid.NewString()
-	}
-	return ids
+	return make([]ID, len(docs))
 }

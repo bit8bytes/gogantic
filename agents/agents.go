@@ -120,7 +120,7 @@ func (a *Agent) Act(ctx context.Context) {
 func (a *Agent) handleAction(ctx context.Context, action AgentAction) bool {
 	tool, exists := a.Tools[action.Tool]
 	if !exists {
-		a.addObservationMessage("Error: Tool '" + action.Tool + "' not found")
+		a.addObservationMessage("Error: Tool '" + action.Tool + "' not found.")
 		return false
 	}
 
@@ -212,7 +212,6 @@ func removeSquareBrackets(s string) string {
 	return s
 }
 
-// removeQuotes removes surrounding quotes if present
 func removeQuotes(s string) string {
 	s = strings.TrimSpace(s)
 	if len(s) >= 2 && s[0] == '"' && s[len(s)-1] == '"' {

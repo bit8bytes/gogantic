@@ -43,7 +43,7 @@ func (a *Agent) addThoughtMessage(thought string) {
 func (a *Agent) addActionMessage(action string) {
 	a.Messages = append(a.Messages, models.MessageContent{
 		Role:    "assistant",
-		Content: "Action: " + action,
+		Content: "Tool: " + action,
 	})
 }
 
@@ -51,7 +51,7 @@ func (a *Agent) addActionMessage(action string) {
 func (a *Agent) addActionInputMessage(input string) {
 	a.Messages = append(a.Messages, models.MessageContent{
 		Role:    "assistant",
-		Content: "Action Input: " + input,
+		Content: "Tool Input: " + input,
 	})
 }
 

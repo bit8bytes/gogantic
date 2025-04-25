@@ -5,6 +5,7 @@ import "context"
 type Map = map[string]any
 
 type Document struct {
+	ID       string
 	Content  string
 	Metadata Map
 	Score    float32

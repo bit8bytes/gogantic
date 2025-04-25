@@ -1,8 +1,12 @@
 # Interacting with LLMs in Go has never been easier.
 
-![Gogantic logo](banner.png)
+This is Gogo the Giant Gopher.
 
-Roadmap (using local models only) without external dependencies:
+<img src="gogantic-mascot.png" alt="Gogantic Mascot" width="250"/>
+
+Gogo can help you using LLM's in Go(lang). Gogo doesn't use any external dependencies and help's speeds up your interaction with LLM's.
+
+## Roadmap
 
 1. Build core (1) components to interact with large language models
 2. Create an Agent (2) that can inetract with the outside world using tools
@@ -10,7 +14,7 @@ Roadmap (using local models only) without external dependencies:
 
 After this, implement large language models (OpenAI, Claude, ...) and use the fan-in pattern to execute agents in parallel.
 
-## 1. Core
+### 1. Core
 
 Core enables simple interaction with LLMs. The concept is simple:
 
@@ -28,7 +32,7 @@ fmt.Println("Result: ", result.Text)
 
 Install using `go get github.com/bit8bytes/gogantic/core/pipe`
 
-## 2. Agents
+### 2. Agents
 
 `Tools -> Agent -> Executor -> Final Result`
 
@@ -52,6 +56,6 @@ fmt.Println(finalAnswer)
 
 Run `go get github.com/bit8bytes/gogantic/agents` to install the agents.
 
-## 3. Director Agents (Coming soon)
+### 3. Director Agents (Coming soon)
 
 Now that Agents (2) can call tools, we are able to create an Director Agent that can call Agents.

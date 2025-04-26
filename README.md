@@ -1,28 +1,25 @@
 # Interacting with LLMs in Go has never been easier.
 
-This is Gogo the Giant Gopher.
+Meet Gogo the Giant Gopher.
 
-<p align="center">
-    <img src="gogantic-mascot.png" alt="Gogantic Mascot" width="250"/>
-</p>
+<p align="center"> <img src="gogantic-mascot.png" alt="Gogantic Mascot" width="250"/></p>
 
-Gogo can help you using LLM's in Go(lang). Gogo doesn't use any external dependencies and help's speeds up your interaction with LLM's.
+Gogo helps you work with LLMs in Go(lang) — without external dependencies.
+Gogo speeds up your interactions with LLMs while keeping your stack lean and efficient.
 
 ## 🚴🏽‍♂️ Roadmap
 
-1. ✅ Build core (1) components to interact with large language models
-2. ✅ Create an Agent (2) that can inetract with the outside world using tools
-3. Create an Director Agent (3) that uses Agents as tools to manage complex tasks
+- ✅ Build core components to interact with large language models.
+- ✅ Create an Agent that can interact with the outside world using tools.
+- 🔜 Develop a Director Agent that manages complex tasks by coordinating multiple Agents.
 
-After this, implement large language models (OpenAI, Claude, ...) and use the fan-in pattern to execute agents in parallel.
+Next up: We’ll experiment with intraction between the host system and a local LLM.
 
-### 1. Core
+Bonus: Gogantic includes a simple interface for adding documents to a Qdrant vector store.
 
-Core enables simple interaction with LLMs. The concept is simple:
+## Examples:
 
-`Input -> Model -> Output`
-
-You just have to prepare the messages, add a model and define the output (e.g. json)
+Usage of the `core/pipe`
 
 ```go
 // This is not the full example. See 'examples/core/pipe'
@@ -32,32 +29,23 @@ fmt.Println("Translate from", result.InputLanguage, " to ", result.OutputLanguag
 fmt.Println("Result: ", result.Text)
 ```
 
-Install using `go get github.com/bit8bytes/gogantic/core/pipe`
+Go to [Examples](/EXAMPLES.md) for more info.
+You also can fork the repo and run `make examples/core/pipe` (requires ollama and llama3:8b model).
 
-### 2. Agents
+## 📥 Contributions Welcome
 
-`Tools -> Agent -> Executor -> Final Result`
+Contributions are very welcome! Whether it's fixing a typo, suggesting an improvement, or adding new simplified streamlined features — feel free to open an issue or a pull request.
 
-Agents can interact with tools and get informationen from the outside world. The following example shows an agent that can access the current temperature.
+## 📚 Sources and Inspiration
 
-```go
-// This is not a full example. See 'examples/agents/temperature'
-tools := map[string]agents.Tool{
-    "CurrentTemperatureInFahrenheit": CurrentTemperatureInFahrenheit{},
-}
+- [tmc/langchaingo](https://github.com/tmc/langchaingo)
 
-weatherAgent := agents.New(llm, tools)
-weatherAgent.Task("What is the temperature outside?")
+## ✨ Contributors
 
-executor := agents.NewExecutor(weatherAgent)
-executor.Run(context.TODO())
+<table>
+  <tr>
+    <td align="center"><a href="https://github.com/tobiasgleiter"><img src="https://avatars.githubusercontent.com/tobiasgleiter" width="100px;" alt=""/><br /><sub><b>Tobias Gleiter</b></sub></a></td>
+  </tr>
+</table>
 
-finalAnswer, _ := weatherAgent.GetFinalAnswer()
-fmt.Println(finalAnswer)
-```
-
-Run `go get github.com/bit8bytes/gogantic/agents` to install the agents.
-
-### 3. Director Agents (Coming soon)
-
-Now that Agents (2) can call tools, we are able to create an Director Agent that can call Agents.
+Contributions of any kind are welcome! 🙌

@@ -32,10 +32,6 @@ fmt.Println("Result: ", result.Text)
 Go to [Examples](/EXAMPLES.md) for more info.
 You also can fork the repo and run `make examples/core/pipe` (requires ollama and llama3:8b model).
 
-## 📥 Contributions Welcome
-
-Contributions are very welcome! Whether it's fixing a typo, suggesting an improvement, or adding new simplified streamlined features — feel free to open an issue or a pull request.
-
 ## 📚 Sources and Inspiration
 
 - [tmc/langchaingo](https://github.com/tmc/langchaingo)
@@ -44,7 +40,11 @@ Contributions are very welcome! Whether it's fixing a typo, suggesting an improv
 
 <table>
   <tr>
-    <td align="center"><a href="https://github.com/tobiasgleiter"><img src="https://avatars.githubusercontent.com/tobiasgleiter" width="100px;" alt=""/><br /><sub><b>Tobias Gleiter</b></sub></a></td>
+    <td align="center">
+      <a href="https://github.com/tobiasgleiter">
+        <img src="https://avatars.githubusercontent.com/tobiasgleiter" width="100px" style="border-radius: 50%;" alt="Contributor Avatar"/>
+      </a>
+    </td>
   </tr>
 </table>
 

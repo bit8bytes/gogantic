@@ -19,8 +19,8 @@ type FileParams struct {
 	Filename string `json:"filename"`
 }
 
-type SaveToFile struct{}
 type OpenFile struct{}
+type WriteAndSaveToFile struct{}
 
 func main() {
 	mistral_latest := ollama.OllamaModel{
@@ -32,8 +32,8 @@ func main() {
 
 	llm := ollama.New(mistral_latest)
 	tools := map[string]agents.Tool{
-		"OpenFile":   OpenFile{},
-		"SaveToFile": SaveToFile{},
+		"OpenFile":           OpenFile{},
+		"WriteAndSaveToFile": WriteAndSaveToFile{},
 	}
 
 	agent1 := agents.New(llm, tools)
@@ -54,25 +54,16 @@ func main() {
 	fmt.Println("Task completed")
 }
 
-type OpenFileParameter struct {
-	Filename string `json:"filename"`
-}
-
 func (c OpenFile) Name() string { return "OpenFile" }
 
 func (c OpenFile) Call(ctx context.Context, input string) (string, error) {
-	var params OpenFileParameter
-	if err := json.Unmarshal([]byte(input), &params); err != nil {
-		fmt.Println("JSON parsing error:", err)
-
-		if err := json.Unmarshal([]byte(input), &params); err != nil {
-			return "", errors.New(`please provide a valid JSON with a "filename" fields for tool "OpenFile"`)
-		}
+	if input == "" {
+		return "", errors.New(`please provide the filename in the Action Input: "filename"`)
 	}
 
-	content, err := os.ReadFile(params.Filename)
+	content, err := os.ReadFile(input)
 	if err != nil {
-		return "", errors.New(`please provide a valid JSON with a "filename" fields for tool "OpenFile"`)
+		return "", errors.New(`please provide the filename in the Action Input: "filename"`)
 	}
 
 	response := "The content of the file is " + string(content)
@@ -80,9 +71,9 @@ func (c OpenFile) Call(ctx context.Context, input string) (string, error) {
 	return response, nil
 }
 
-func (c SaveToFile) Name() string { return "SaveToFile" }
+func (c WriteAndSaveToFile) Name() string { return "WriteAndSaveToFile" }
 
-func (c SaveToFile) Call(ctx context.Context, input string) (string, error) {
+func (c WriteAndSaveToFile) Call(ctx context.Context, input string) (string, error) {
 	fmt.Println(input)
 
 	cleanedInput := strings.ReplaceAll(input, `\"`, `"`)
@@ -93,7 +84,7 @@ func (c SaveToFile) Call(ctx context.Context, input string) (string, error) {
 		fmt.Println("JSON parsing error:", err)
 
 		if err := json.Unmarshal([]byte(input), &params); err != nil {
-			return "", errors.New(`please provide a valid JSON with "content" and "filename" fields for tool "SaveToFile"`)
+			return "", errors.New(`please provide a valid JSON with "content" and "filename" fields for tool "WriteAndSaveToFile"`)
 		}
 	}
 

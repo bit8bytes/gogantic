@@ -82,7 +82,7 @@ func (a *Agent) Plan(ctx context.Context) (AgentResponse, error) {
 	}
 
 	if len(action) > 1 {
-		tool := removeSquareBrackets(action)
+		tool := extractSquareBracketsContent(action)
 		a.addActionMessage(tool)
 
 		inputText := ""
@@ -120,7 +120,7 @@ func (a *Agent) Act(ctx context.Context) {
 func (a *Agent) handleAction(ctx context.Context, action AgentAction) bool {
 	tool, exists := a.Tools[action.Tool]
 	if !exists {
-		a.addObservationMessage("Error: Tool '" + action.Tool + "' not found.")
+		a.addObservationMessage("The Action: [" + action.Tool + "] doesn't exist.")
 		return false
 	}
 
@@ -162,10 +162,10 @@ Select the tool that fits the question:
 Use the following format:
 
 Thought: you should always think about what to do
-Action: the action (only one at a time) to take in suqare braces e.g [NameOfTool]
-Action Input: the input value for the action in quotes e.g. "string" or "int"
+Action: [Toolname] the action (only one at a time) to take in suqare braces e.g [NameOfTool]
+Action Input: "input" the input value for the action in quotes e.g. "string" or "int"
 Observation: the result of the action
-... (this Thought:/Action:/Action Input:/Observation: can repeat N times)
+... (this Thought: .../Action: [Toolname]/Action Input: "input"/Observation: ... can repeat N times)
 Thought: I now know the final answer
 FINAL ANSWER: the final answer to the original input question
 
@@ -210,6 +210,21 @@ func removeSquareBrackets(s string) string {
 		return s[1 : len(s)-1]
 	}
 	return s
+}
+
+func extractSquareBracketsContent(s string) string {
+	startIndex := strings.Index(s, "[")
+	if startIndex == -1 {
+		return "" // No opening bracket found
+	}
+
+	endIndex := strings.Index(s[startIndex:], "]")
+	if endIndex == -1 {
+		return "" // No closing bracket found
+	}
+
+	// Extract the content between brackets
+	return s[startIndex+1 : startIndex+endIndex]
 }
 
 func removeQuotes(s string) string {

@@ -169,7 +169,7 @@ Observation: the result of the action
 Thought: I now know the final answer
 FINAL ANSWER: the final answer to the original input question
 
-Think in steps.
+Think in steps. Don't hallucinate. Don't make up answers.
 `},
 	})
 

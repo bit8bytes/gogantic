@@ -16,7 +16,7 @@ type SaveToFile struct{}
 
 func main() {
 	mistral_latest := ollama.OllamaModel{
-		Model:     "mistral:latest",
+		Model:     "gemma3:4b",
 		Options:   ollama.ModelOptions{NumCtx: 4096},
 		Stream:    false,
 		KeepAlive: -1,
@@ -30,7 +30,7 @@ func main() {
 	}
 
 	weatherAgent := agents.New(llm, tools)
-	weatherAgent.Task("What is the temperature outside?")
+	weatherAgent.Task("1. What is the temperature outside? 2. What is the temperature in Celsius?")
 
 	executor := agents.NewExecutor(weatherAgent,
 		agents.WithIterationLimit(10),

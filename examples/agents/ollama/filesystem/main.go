@@ -24,7 +24,7 @@ type WriteAndSaveToFile struct{}
 
 func main() {
 	mistral_latest := ollama.OllamaModel{
-		Model:   "mistral:latest",
+		Model:   "gemma3:4b",
 		Options: ollama.ModelOptions{NumCtx: 4096},
 		Stream:  false,
 		Stop:    []string{"\nObservation", "Observation"},
@@ -37,7 +37,11 @@ func main() {
 	}
 
 	agent1 := agents.New(llm, tools)
-	agent1.Task("Open the file foobar.txt, add the sentence: I can edit files and save it to altered_foobar.txt")
+	agent1.Task(`
+1. Open the file foobar.txt. 
+2. Read the content and add the sentence: I can edit files 
+3. Save it to altered_foobar.txt
+`)
 	executor1 := agents.NewExecutor(agent1, agents.WithShowMessages())
 
 	var wg sync.WaitGroup
@@ -63,7 +67,7 @@ func (c OpenFile) Call(ctx context.Context, input string) (string, error) {
 
 	content, err := os.ReadFile(input)
 	if err != nil {
-		return "", errors.New(`please provide the filename in the Action Input: "filename"`)
+		return "", errors.New(err.Error())
 	}
 
 	response := "The content of the file is " + string(content)
@@ -77,6 +81,7 @@ func (c WriteAndSaveToFile) Call(ctx context.Context, input string) (string, err
 	fmt.Println(input)
 
 	cleanedInput := strings.ReplaceAll(input, `\"`, `"`)
+	cleanedInput = strings.ReplaceAll(cleanedInput, `'`, ``)
 	cleanedInput = strings.Trim(cleanedInput, `"`)
 
 	var params FileParams

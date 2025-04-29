@@ -48,4 +48,4 @@ You also can fork the repo and run `make examples/core/pipe` (requires ollama an
   </tr>
 </table>
 
-Contributions of any kind are welcome! 🙌
+Contributions of any kind are welcome! 🙌 See [Get Involved](/GET-INVOLVED.md) to get started.

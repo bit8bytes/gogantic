@@ -2,7 +2,7 @@
 
 Meet Gogo the Giant Gopher.
 
-<p align="center"> <img src="gogantic-mascot.png" alt="Gogantic Mascot" width="250"/></p>
+<p align="center"> <img src="/img/gogantic-mascot.png" alt="Gogantic Mascot" width="250"/></p>
 
 Gogo helps you work with LLMs in Go(lang) — without external dependencies.
 Gogo speeds up your interactions with LLMs while keeping your stack lean and efficient.

@@ -28,11 +28,14 @@ Agents utilises the ReAct pattern and can call tools.
 - ✅ Create an Agent that can interact with the outside world using tools.
 - 🔜 Develop a Director Agent that manages complex tasks by coordinating multiple Agents.
 
-.....
-
-To be continued.
-
 ## 🧑🏽‍💻 Developer Guide
+
+1. Select an issue from the issues tab.
+2. Fork the repository
+3. Checkout to a new branch `git checkout -b <descriptive-name>`
+4. Do the changes according to the issue
+5. Add, commit and push the changes
+6. Create a pull request. It will be tested and merged by the maintainers
 
 ## Contributing (i.e. Cheatsheet)
 

@@ -1,4 +1,6 @@
-# Interacting with LLMs in Go has never been easier.
+**# Interacting with LLMs in Go has never been easier.**
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 Meet Gogo the Giant Gopher.
 
@@ -17,7 +19,7 @@ Next up: We’ll experiment with intraction between the host system and a local 
 
 Bonus: Gogantic includes a simple interface for adding documents to a Qdrant vector store.
 
-## Examples:
+## Example:
 
 Usage of the `core/pipe`
 

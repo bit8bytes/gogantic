@@ -17,7 +17,10 @@ type EmbeddingResponse struct {
 	Embedding []float32 `json:"embedding"`
 }
 
+type StreamHandler func(content string, done bool) error
+
 type Model interface {
-	GenerateContent(ctx context.Context, messages []MessageContent) (ContentResponse, error)
+	GenerateContent(ctx context.Context, messages []MessageContent) (*ContentResponse, error)
 	GenerateEmbedding(ctx context.Context, prompt string) (EmbeddingResponse, error)
+	StreamContent(ctx context.Context, messages []MessageContent, streamHandler StreamHandler) error
 }

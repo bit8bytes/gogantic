@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 	"net/http"
 	"time"
@@ -47,7 +48,7 @@ func New(model Model, opts ...OpenAiClientOption) *OpenAiClient {
 }
 
 // GenerateContent sends a request to generate content based on the provided messages
-func (oc *OpenAiClient) GenerateContent(ctx context.Context, messages []models.MessageContent) (models.ContentResponse, error) {
+func (oc *OpenAiClient) GenerateContent(ctx context.Context, messages []models.MessageContent) (*models.ContentResponse, error) {
 	requestPayload := OpenAIRequest{
 		Model:    oc.Model.Model,
 		Messages: messages,
@@ -67,12 +68,12 @@ func (oc *OpenAiClient) GenerateContent(ctx context.Context, messages []models.M
 
 	requestBody, err := json.Marshal(requestPayload)
 	if err != nil {
-		return models.ContentResponse{}, err
+		return nil, err
 	}
 
 	req, err := http.NewRequestWithContext(ctx, "POST", "https://api.openai.com/v1/chat/completions", bytes.NewBuffer(requestBody))
 	if err != nil {
-		return models.ContentResponse{}, err
+		return nil, err
 	}
 
 	req.Header.Set("Content-Type", "application/json")
@@ -80,29 +81,33 @@ func (oc *OpenAiClient) GenerateContent(ctx context.Context, messages []models.M
 
 	resp, err := oc.HttpClient.Do(req)
 	if err != nil {
-		return models.ContentResponse{}, err
+		return nil, err
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
 		bodyBytes, _ := io.ReadAll(resp.Body)
-		return models.ContentResponse{}, errors.New("API error: " + string(bodyBytes))
+		return nil, errors.New("API error: " + string(bodyBytes))
 	}
 
 	var openAIResp OpenAIResponse
 	if err := json.NewDecoder(resp.Body).Decode(&openAIResp); err != nil {
-		return models.ContentResponse{}, err
+		return nil, err
 	}
 
 	if len(openAIResp.Choices) == 0 {
-		return models.ContentResponse{}, errors.New("no choices returned from API")
+		return nil, errors.New("no choices returned from API")
 	}
 
 	contentResponse := models.ContentResponse{
 		Result: openAIResp.Choices[0].Message.Content,
 	}
 
-	return contentResponse, nil
+	return &contentResponse, nil
+}
+
+func (oc *OpenAiClient) StreamContent(ctx context.Context, messages []models.MessageContent, streamHandler models.StreamHandler) error {
+	return fmt.Errorf("streaming not implemented")
 }
 
 // GenerateEmbedding sends a request to generate an embedding for the provided input

@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 	"net/http"
 	"strings"
@@ -21,7 +22,7 @@ func New(model OllamaModel) *OllamaClient {
 	return &OllamaClient{Model: model}
 }
 
-func (oc *OllamaClient) GenerateContent(ctx context.Context, messages []models.MessageContent) (models.ContentResponse, error) {
+func (oc *OllamaClient) GenerateContent(ctx context.Context, messages []models.MessageContent) (*models.ContentResponse, error) {
 	client := &http.Client{
 		Timeout: 240 * time.Second,
 	}
@@ -42,18 +43,18 @@ func (oc *OllamaClient) GenerateContent(ctx context.Context, messages []models.M
 
 	requestBody, err := json.Marshal(request)
 	if err != nil {
-		return models.ContentResponse{}, errors.New("error marshaling request")
+		return nil, errors.New("error marshaling request")
 	}
 
 	req, err := http.NewRequest("POST", endpoint, bytes.NewReader(requestBody))
 	if err != nil {
-		return models.ContentResponse{}, errors.New("create request failed")
+		return nil, errors.New("create request failed")
 	}
 	req.Header.Set("Content-Type", "application/json")
 
 	resp, err := client.Do(req)
 	if err != nil {
-		return models.ContentResponse{}, errors.New("HTTP request failed")
+		return nil, errors.New("HTTP request failed")
 	}
 	defer resp.Body.Close()
 
@@ -65,7 +66,7 @@ func (oc *OllamaClient) GenerateContent(ctx context.Context, messages []models.M
 			if errors.Is(err, io.EOF) {
 				break
 			}
-			return models.ContentResponse{}, errors.New("error decoding response")
+			return nil, errors.New("error decoding response")
 		}
 
 		finalResponse.Message.Content += chatResponse.Message.Content
@@ -73,16 +74,94 @@ func (oc *OllamaClient) GenerateContent(ctx context.Context, messages []models.M
 			if strings.Contains(finalResponse.Message.Content, stopSeq) {
 				finalResponse.Message.Content = strings.Split(finalResponse.Message.Content, stopSeq)[0]
 				finalResponse.Done = true
-				return models.ContentResponse{Result: finalResponse.Message.Content}, nil
+				return &models.ContentResponse{Result: finalResponse.Message.Content}, nil
 			}
 		}
 	}
 
 	if chatResponse.Done {
-		return models.ContentResponse{Result: finalResponse.Message.Content}, nil
+		return &models.ContentResponse{Result: finalResponse.Message.Content}, nil
 	}
 
-	return models.ContentResponse{Result: finalResponse.Message.Content}, nil
+	return &models.ContentResponse{Result: finalResponse.Message.Content}, nil
+}
+
+func (oc *OllamaClient) StreamContent(ctx context.Context, messages []models.MessageContent, handler models.StreamHandler) error {
+	endpoint := oc.Model.Endpoint
+	if endpoint == "" {
+		endpoint = "http://localhost:11434/api/chat"
+	}
+
+	request := OllamaChatRequest{
+		Model:     oc.Model.Model,
+		Messages:  messages,
+		Options:   oc.Model.Options,
+		Stream:    true,
+		Format:    oc.Model.Format,
+		KeepAlive: oc.Model.KeepAlive,
+	}
+
+	requestBody, err := json.Marshal(request)
+	if err != nil {
+		return fmt.Errorf("error marshaling request: %w", err)
+	}
+
+	req, err := http.NewRequestWithContext(ctx, "POST", endpoint, strings.NewReader(string(requestBody)))
+	if err != nil {
+		return fmt.Errorf("error creating request: %w", err)
+	}
+	req.Header.Set("Content-Type", "application/json")
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return fmt.Errorf("error sending request: %w", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		body, _ := io.ReadAll(resp.Body)
+		return fmt.Errorf("API returned error status %d: %s", resp.StatusCode, string(body))
+	}
+
+	decoder := json.NewDecoder(resp.Body)
+	var fullContent string
+
+	for {
+		select {
+		case <-ctx.Done():
+			return ctx.Err()
+		default:
+		}
+
+		var chatResponse ChatResponse
+		if err := decoder.Decode(&chatResponse); err != nil {
+			if err == io.EOF {
+				return nil
+			}
+			return fmt.Errorf("error decoding response: %w", err)
+		}
+
+		fullContent += chatResponse.Message.Content
+
+		shouldStop := false
+		for _, stopSeq := range oc.Model.Stop {
+			if strings.Contains(fullContent, stopSeq) {
+				parts := strings.Split(fullContent, stopSeq)
+				chatResponse.Message.Content = parts[0]
+				shouldStop = true
+				break
+			}
+		}
+
+		if err := handler(chatResponse.Message.Content, chatResponse.Done || shouldStop); err != nil {
+			return fmt.Errorf("handler error: %w", err)
+		}
+
+		if chatResponse.Done || shouldStop {
+			return nil
+		}
+	}
 }
 
 func (oc *OllamaClient) GenerateEmbedding(ctx context.Context, prompt string) (models.EmbeddingResponse, error) {

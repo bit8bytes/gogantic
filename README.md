@@ -1,4 +1,4 @@
-**# Interacting with LLMs in Go has never been easier.**
+# Interacting with LLMs in Go has never been easier.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 

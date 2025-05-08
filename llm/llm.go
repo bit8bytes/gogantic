@@ -19,7 +19,7 @@ type EmbeddingResponse struct {
 
 type StreamHandler func(content string, done bool) error
 
-type Model interface {
+type LLM interface {
 	GenerateContent(ctx context.Context, messages []Message) (*ContentResponse, error)
 	GenerateEmbedding(ctx context.Context, prompt string) (EmbeddingResponse, error)
 	StreamContent(ctx context.Context, messages []Message, streamHandler StreamHandler) error

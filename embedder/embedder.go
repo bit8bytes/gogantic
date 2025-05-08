@@ -7,10 +7,10 @@ import (
 )
 
 type Embedder struct {
-	LLM llm.Model
+	LLM llm.LLM
 }
 
-func New(llm llm.Model) *Embedder {
+func New(llm llm.LLM) *Embedder {
 	return &Embedder{
 		LLM: llm,
 	}

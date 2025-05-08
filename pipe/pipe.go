@@ -9,11 +9,11 @@ import (
 
 type Pipe[T any] struct {
 	Messages     []llm.Message
-	Model        llm.Model
+	Model        llm.LLM
 	OutputParser output.Parser[T]
 }
 
-func New[T any](messages []llm.Message, model llm.Model, outputParser output.Parser[T]) *Pipe[T] {
+func New[T any](messages []llm.Message, model llm.LLM, outputParser output.Parser[T]) *Pipe[T] {
 	return &Pipe[T]{
 		Messages:     messages,
 		Model:        model,

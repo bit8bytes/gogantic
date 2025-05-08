@@ -11,14 +11,14 @@ import (
 )
 
 type Agent struct {
-	Model           llm.Model
+	Model           llm.LLM
 	Tools           map[string]Tool
 	Messages        []llm.Message
 	Actions         []AgentAction
 	initialMessages []llm.Message
 }
 
-func New(model llm.Model, tools map[string]Tool) *Agent {
+func New(model llm.LLM, tools map[string]Tool) *Agent {
 	toolNames := getToolNames(tools)
 	initialMessages := setupReActPromptInitialMessages(toolNames)
 

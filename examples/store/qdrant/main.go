@@ -5,16 +5,16 @@ import (
 	"fmt"
 	"net/url"
 
-	"github.com/bit8bytes/gogantic/core/embedder"
-	"github.com/bit8bytes/gogantic/core/models/llms/ollama"
+	"github.com/bit8bytes/gogantic/embedder"
+	"github.com/bit8bytes/gogantic/llm/ollama"
 	"github.com/bit8bytes/gogantic/store/qdrant"
 )
 
 func main() {
 	// Embedding size of ollama3:8b = 4096
-	llama3_8b_model := ollama.OllamaModel{
+	llama3_8b_model := ollama.Model{
 		Model:   "llama3:8b",
-		Options: ollama.ModelOptions{NumCtx: 4096},
+		Options: ollama.Options{NumCtx: 4096},
 		Stream:  false,
 	}
 

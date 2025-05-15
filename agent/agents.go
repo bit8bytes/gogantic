@@ -14,7 +14,7 @@ type Agent struct {
 	Model           llm.LLM
 	Tools           map[string]Tool
 	Messages        []llm.Message
-	Actions         []AgentAction
+	Actions         []Action
 	initialMessages []llm.Message
 }
 
@@ -51,10 +51,10 @@ Question: {{.input}}
 }
 
 // Identifies the generated messages and splits them into thought, action and action input
-func (a *Agent) Plan(ctx context.Context) (AgentResponse, error) {
+func (a *Agent) Plan(ctx context.Context) (*Response, error) {
 	generatedContent, err := a.Model.GenerateContent(ctx, a.Messages)
 	if err != nil {
-		return AgentResponse{}, err
+		return nil, err
 	}
 
 	text := generatedContent.Result
@@ -66,7 +66,7 @@ func (a *Agent) Plan(ctx context.Context) (AgentResponse, error) {
 			Content: fmt.Sprintf("\nFinal Answer: %s", final),
 		})
 
-		return AgentResponse{Finish: true}, nil
+		return &Response{Finish: true}, nil
 	}
 
 	thought := extractAfterLabel(text, "Thought: ")
@@ -93,7 +93,7 @@ func (a *Agent) Plan(ctx context.Context) (AgentResponse, error) {
 			a.addActionInputMessage("\"\"")
 		}
 
-		a.Actions = []AgentAction{
+		a.Actions = []Action{
 			{
 				Tool:      tool,
 				ToolInput: inputText,
@@ -103,7 +103,7 @@ func (a *Agent) Plan(ctx context.Context) (AgentResponse, error) {
 		fmt.Println("Warning: No action found in response")
 	}
 
-	return AgentResponse{Finish: false}, nil
+	return &Response{Finish: false}, nil
 }
 
 // Uses the given tools to get observations
@@ -117,7 +117,7 @@ func (a *Agent) Act(ctx context.Context) {
 }
 
 // Handle action is a helper function that calls the tool selected by the LLM and adds the observation output
-func (a *Agent) handleAction(ctx context.Context, action AgentAction) bool {
+func (a *Agent) handleAction(ctx context.Context, action Action) bool {
 	tool, exists := a.Tools[action.Tool]
 	if !exists {
 		a.addObservationMessage("The Action: [" + action.Tool + "] doesn't exist.")

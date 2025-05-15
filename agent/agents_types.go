@@ -1,22 +1,22 @@
 package agent
 
-type AgentStep struct {
+type Step struct {
 	Thought     string
 	Actions     string
 	Observation string
 }
 
-type AgentAction struct {
+type Action struct {
 	Tool      string
 	ToolInput string
 	ToolID    string
 }
 
-type AgentFinish struct {
+type Finish struct {
 	ReturnValues map[string]any
 }
 
-type AgentResponse struct {
-	Actions []AgentAction
+type Response struct {
+	Actions []Action
 	Finish  bool
 }

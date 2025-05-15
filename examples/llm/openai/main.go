@@ -6,14 +6,14 @@ import (
 	"log"
 	"os"
 
-	"github.com/bit8bytes/gogantic/core/input"
-	"github.com/bit8bytes/gogantic/core/models"
-	"github.com/bit8bytes/gogantic/core/models/llms/openai"
+	"github.com/bit8bytes/gogantic/input/chat"
+	"github.com/bit8bytes/gogantic/llm"
+	"github.com/bit8bytes/gogantic/llm/openai"
 )
 
 func main() {
 
-	chatPrompt, _ := input.NewChatPromptTemplate([]models.MessageContent{
+	chatPrompt, _ := chat.New([]llm.Message{
 		{Role: "system", Content: "You are a helpful assistant that translates {{.inputLanguage}} to {{.outputLanguage}}."},
 		{Role: "user", Content: "{{.text}}"},
 	})
@@ -24,7 +24,7 @@ func main() {
 		"text":           "I love programming.",
 	}
 
-	formattedMessages, err := chatPrompt.FormatMessages(data)
+	formattedMessages, err := chatPrompt.Format(data)
 	if err != nil {
 		panic(err)
 	}

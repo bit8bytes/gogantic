@@ -4,7 +4,7 @@ import (
 	"context"
 	"net/url"
 
-	"github.com/bit8bytes/gogantic/core/embedder"
+	"github.com/bit8bytes/gogantic/embedder"
 	"github.com/bit8bytes/gogantic/store"
 )
 

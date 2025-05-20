@@ -8,17 +8,26 @@ import (
 
 	"github.com/bit8bytes/gogantic/input/chat"
 	"github.com/bit8bytes/gogantic/llm"
+	"github.com/bit8bytes/gogantic/tool"
 )
 
 type Agent struct {
 	Model           llm.LLM
-	Tools           map[string]Tool
+	Tools           map[string]tool.Tool
 	Messages        []llm.Message
 	Actions         []Action
 	initialMessages []llm.Message
 }
 
-func New(model llm.LLM, tools map[string]Tool) *Agent {
+func getToolNames(tools map[string]tool.Tool) string {
+	names := make([]string, 0, len(tools))
+	for _, tool := range tools {
+		names = append(names, tool.Name())
+	}
+	return strings.Join(names, ", ")
+}
+
+func New(model llm.LLM, tools map[string]tool.Tool) *Agent {
 	toolNames := getToolNames(tools)
 	initialMessages := setupReActPromptInitialMessages(toolNames)
 

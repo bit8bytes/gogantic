@@ -11,6 +11,7 @@ import (
 
 	"github.com/bit8bytes/gogantic/agent"
 	"github.com/bit8bytes/gogantic/llm/ollama"
+	"github.com/bit8bytes/gogantic/tool"
 )
 
 // FileParams defines the structure for SaveToFile parameters
@@ -31,7 +32,7 @@ func main() {
 	}
 
 	llm := ollama.New(mistral_latest)
-	tools := map[string]agent.Tool{
+	tools := map[string]tool.Tool{
 		"OpenFile":           OpenFile{},
 		"WriteAndSaveToFile": WriteAndSaveToFile{},
 	}

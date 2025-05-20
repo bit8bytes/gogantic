@@ -9,6 +9,7 @@ import (
 
 	"github.com/bit8bytes/gogantic/agent"
 	"github.com/bit8bytes/gogantic/llm/openai"
+	"github.com/bit8bytes/gogantic/tool"
 )
 
 type CurrentDatetime struct{}
@@ -34,7 +35,7 @@ func main() {
 
 	llm := openai.New(gpt_35_turbo)
 
-	tools := map[string]agent.Tool{
+	tools := map[string]tool.Tool{
 		"CurrentTemperatureInFahrenheit": CurrentTemperatureInFahrenheit{},
 		"FormatFahrenheitToCelsius":      FormatFahrenheitToCelsius{},
 	}

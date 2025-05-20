@@ -10,6 +10,7 @@ import (
 	"github.com/bit8bytes/gogantic/llm/ollama"
 	"github.com/bit8bytes/gogantic/output"
 	"github.com/bit8bytes/gogantic/output/separator"
+	"github.com/bit8bytes/gogantic/tool"
 )
 
 type Calculator struct{}
@@ -23,7 +24,7 @@ func main() {
 	}
 	llm := ollama.New(mistral_latest)
 
-	tools := map[string]agent.Tool{
+	tools := map[string]tool.Tool{
 		"Calculator": Calculator{},
 	}
 

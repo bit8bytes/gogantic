@@ -7,6 +7,7 @@ import (
 
 	"github.com/bit8bytes/gogantic/agent"
 	"github.com/bit8bytes/gogantic/llm/ollama"
+	"github.com/bit8bytes/gogantic/tool"
 )
 
 type GetTime struct{}
@@ -20,7 +21,7 @@ func main() {
 	}
 	llm := ollama.New(wizardlm2_7b)
 
-	tools := map[string]agent.Tool{
+	tools := map[string]tool.Tool{
 		"GetTime": GetTime{},
 	}
 

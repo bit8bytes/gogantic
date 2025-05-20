@@ -7,6 +7,7 @@ import (
 
 	"github.com/bit8bytes/gogantic/agent"
 	"github.com/bit8bytes/gogantic/llm/ollama"
+	"github.com/bit8bytes/gogantic/tool"
 )
 
 type CurrentDatetime struct{}
@@ -24,7 +25,7 @@ func main() {
 	}
 	llm := ollama.New(mistral_latest)
 
-	tools := map[string]agent.Tool{
+	tools := map[string]tool.Tool{
 		"CurrentTemperatureInFahrenheit": CurrentTemperatureInFahrenheit{},
 		"FormatFahrenheitToCelsius":      FormatFahrenheitToCelsius{},
 	}

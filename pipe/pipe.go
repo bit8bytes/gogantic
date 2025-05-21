@@ -21,20 +21,18 @@ func New[T any](messages []llm.Message, model llm.LLM, outputParser output.Parse
 	}
 }
 
-func (p *Pipe[T]) Invoke(ctx context.Context) (T, error) {
+func (p *Pipe[T]) Invoke(ctx context.Context) (*T, error) {
 	formatInstructions := p.OutputParser.GetFormatInstructions()
 	p.Messages[0].Content += " " + formatInstructions
 
 	output, err := p.Model.GenerateContent(ctx, p.Messages)
 	if err != nil {
-		var zero T
-		return zero, err
+		return nil, err
 	}
 
 	parsedOutput, err := p.OutputParser.Parse(output.Result)
 	if err != nil {
-		var zero T
-		return zero, err
+		return nil, err
 	}
-	return parsedOutput, nil
+	return &parsedOutput, nil
 }

@@ -44,7 +44,7 @@ func main() {
 	pipe := pipe.New(messages, ollamaClient, parser)
 	result, _ := pipe.Invoke(ctx)
 
-	for heading, content := range result {
+	for heading, content := range *result {
 		// Do something with the sections. E.g. let other agents validate the content.
 		fmt.Printf("\n--- %s ---\n%s\n", heading, content)
 	}

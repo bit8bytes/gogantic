@@ -36,7 +36,7 @@ The executor will run n times till the the LLM returns a final result.
 3. Checkout to a new branch `git checkout -b <descriptive-name>`
 4. Do the changes according to the issue (if not clear feel free to ask)
 5. Add, commit and push the changes (please use [conventional commits](https://www.conventionalcommits.org))
-6. Create a pull request. It will be tested and merged by the maintainers
+6. Create a pull request, see: [PR](/docs/PULL-REQUEST-EXAMPLE.md) . It will be tested and merged by the maintainers
 
 ## Contributing (i.e. Cheatsheet)
 

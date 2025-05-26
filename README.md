@@ -43,10 +43,15 @@ You also can fork the repo and run `make examples/core/pipe` (requires ollama an
 <table>
   <tr>
     <td align="center">
-      <a href="https://github.com/tobiasgleiter">
-        <img src="https://avatars.githubusercontent.com/tobiasgleiter" width="100px" style="border-radius: 50%;" alt="Contributor Avatar"/>
-      </a>
+      <img src="https://avatars.githubusercontent.com/tobiasgleiter" width="64px" style="border-radius: 50%;" alt="Contributor Avatar"/>
     </td>
+     <td align="center">
+      <img src="https://avatars.githubusercontent.com/u/79313705" width="64px" style="border-radius: 50%;" alt="Contributor Avatar"/>
+    </td>
+    <td align="center">
+      <img src="https://avatars.githubusercontent.com/u/184933573" width="64px" style="border-radius: 50%;" alt="Contributor Avatar"/>
+    </td>
+  
   </tr>
 </table>
 

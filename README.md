@@ -17,22 +17,19 @@ Gogo speeds up your interactions with LLMs while keeping your stack lean and eff
 
 Next up: We’ll experiment with intraction between the host system and a local LLM.
 
-Bonus: Gogantic includes a simple interface for adding documents to a Qdrant vector store.
-
 ## Example:
 
-Usage of the `core/pipe`
+Usage of the `pipe`
 
 ```go
-// This is not the full example. See 'examples/core/pipe'
+// This is not the full example. See 'examples/pipe'
 pipe := pipe.New(messages, ollamaClient, parser)
 result, _ := pipe.Invoke(context.Background())
 fmt.Println("Translate from", result.InputLanguage, " to ", result.OutputLanguage)
 fmt.Println("Result: ", result.Text)
 ```
 
-Go to [Examples](/EXAMPLES.md) for more info.
-You also can fork the repo and run `make examples/core/pipe` (requires ollama and llama3:8b model).
+Go to [Examples](/docs/EXAMPLES.md) for more info.
 
 ## 📚 Sources and Inspiration
 
@@ -55,4 +52,4 @@ You also can fork the repo and run `make examples/core/pipe` (requires ollama an
   </tr>
 </table>
 
-Contributions of any kind are welcome! 🙌 See [Get Involved](/GET-INVOLVED.md) to get started.
+Contributions of any kind are welcome! 🙌 See [Get Involved](/docs/GET-INVOLVED.md) to get started.

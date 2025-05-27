@@ -11,11 +11,7 @@ Gogo speeds up your interactions with LLMs while keeping your stack lean and eff
 
 ## 🚴🏽‍♂️ Roadmap
 
-- ✅ Build core components to interact with large language models.
-- ✅ Create an Agent that can interact with the outside world using tools.
-- 🔜 Develop a Director Agent that manages complex tasks by coordinating multiple Agents.
-
-Next up: We’ll experiment with intraction between the host system and a local LLM.
+See [Roadmap](/docs/GET-INVOLVED.md#%EF%B8%8F-roadmap).
 
 ## Example:
 

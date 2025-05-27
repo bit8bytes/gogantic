@@ -1,51 +1,105 @@
 # Get Involved
 
-## 🎯 Objectives (Objectives and non-objectives)
+## 🎯 Objectives (What we aim to do and what we don’t)
 
 ### Objectives
 
-1. Make interactions with LLMs easier.
-2. Keep it lightweight and focus on the core.
-3. Make it accessible to all people.
-4. Build with security and privacy in mind: focus on local LLMs.
+1. Make interactions with LLMs easier and observable.
+2. Keep it lightweight and focused on the core.
+3. Make it accessible to everyone.
+4. Build with security and privacy in mind — prioritize local LLMs.
 
 ### Non-Objectives
 
-1. Overbloat the libary/package with external dependencies and features.
-2. Mimic other big libraries that enable interaction with LLMs
+1. Bloat the library/package with external dependencies or excessive features.
+2. Mimic large libraries that enable LLM interaction.
+
+---
 
 ## 🏛️ System Design
 
-There are two main distinctions. Firstly, the Core and secondly the Agents.
-In short, Core consists of these three components: `Input -> LLM -> Output`.
+### Core
 
-Agents utilises the ReAct pattern and can call tools:
-In short, Agent consists of three components: `Tools -> Agent -> Executor`
-The executor will run n times till the the LLM returns a final result.
+The Core groups the following modules: `Input`, `LLM`, `Output`, and `Pipe`. The image below illustrates this concept.
+
+![High Level Design](/docs/concept/core.svg)  
+**Caption**: The image shows the three core components — `Input`, `LLM`, and `Output`. A session is defined as the flow from `Input` to `Output`, enabling fine-grained observability.
+
+---
+
+### Agent
+
+There is currently an experimental agent implementation that follows the ReAct pattern to call tools. The current focus remains on the Core.
+
+In short, the Agent consists of three components: `Tools -> Agent -> Executor`. The executor runs multiple cycles until the LLM returns a final result.
+
+---
 
 ## 🚴🏽‍♂️ Roadmap
 
-- ✅ Build core components to interact with large language models.
-- ✅ Create an Agent that can interact with the outside world using tools.
-- 🔜 Develop a Director Agent that manages complex tasks by coordinating multiple Agents.
+The focus is first **observability**, then **security**, and finally **compliance** within the Gogantic Core.
+
+### Phase 1
+
+**Objective**: Implement observability into Gogantic Core
+
+- [x] Build core components to interact with large language models
+- [ ] Conduct research and developer/company interviews to validate the need for lightweight LLM interaction (focused on observability, security, and compliance)
+- [ ] Publish observability flow for core components
+- [ ] Release Gogantic Core with observability support for beta testing
+
+### Phase 2
+
+_To be determined_
+
+### Phase 3
+
+_To be determined_
+
+### Side Projects
+
+We are also working on an agent capable of autonomously executing tasks. Here's the current status:
+
+- ✅ Create an agent that can interact with external tools
+- 🔜 Develop a **Director Agent** to manage complex tasks by coordinating multiple agents
+
+---
 
 ## 🧑🏽‍💻 Developer Guide
 
-1. Select an issue from the issues tab.
+1. Select an issue from the issues tab
 2. Fork the repository
-3. Checkout to a new branch `git checkout -b <descriptive-name>`
-4. Do the changes according to the issue (if not clear feel free to ask)
-5. Add, commit and push the changes (please use [conventional commits](https://www.conventionalcommits.org))
-6. Create a pull request, see: [PR](/docs/PULL-REQUEST-EXAMPLE.md) . It will be tested and merged by the maintainers
+3. Checkout a new branch: `git checkout -b <descriptive-name>`
+4. Make changes based on the issue (feel free to ask if anything is unclear)
+5. Add, commit, and push your changes using [Conventional Commits](https://www.conventionalcommits.org)
+6. Create a pull request — see: [PR Example](/docs/PULL-REQUEST-EXAMPLE.md). A maintainer will review, test, and merge it
 
-## Contributing (i.e. Cheatsheet)
+---
 
-## Code Of Conduct
+## 🛠️ Contributing (Cheat Sheet)
 
-## Maintainers
+_This section will provide a quick reference for contributing. Coming soon._
 
-1. Tobias Gleiter
+---
 
-## Release Process
+## 🧭 Code of Conduct
 
-## Documentation
+_This section will define expected behavior and guidelines for contributors. Coming soon._
+
+---
+
+## 🔧 Maintainers
+
+- Tobias Gleiter
+
+---
+
+## 🚀 Release Process
+
+_This section will explain how releases are versioned and deployed. Coming soon._
+
+---
+
+## 📚 Documentation
+
+_This section will link or reference further documentation. Coming soon._

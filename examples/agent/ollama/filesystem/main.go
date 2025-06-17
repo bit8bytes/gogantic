@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"os"
 	"strings"
-	"sync"
 
 	"github.com/bit8bytes/gogantic/agent"
 	"github.com/bit8bytes/gogantic/llm/ollama"
@@ -24,14 +23,14 @@ type OpenFile struct{}
 type WriteAndSaveToFile struct{}
 
 func main() {
-	mistral_latest := ollama.Model{
+	model := ollama.Model{
 		Model:   "gemma3:4b",
 		Options: ollama.Options{NumCtx: 4096},
 		Stream:  false,
 		Stop:    []string{"\nObservation", "Observation"},
 	}
 
-	llm := ollama.New(mistral_latest)
+	llm := ollama.New(model)
 	tools := map[string]tool.Tool{
 		"OpenFile":           OpenFile{},
 		"WriteAndSaveToFile": WriteAndSaveToFile{},
@@ -40,23 +39,14 @@ func main() {
 	agent1 := agent.New(llm, tools)
 	agent1.Task(`
 1. Open the file foobar.txt. 
-2. Read the content and add the sentence: I can edit files 
+2. Read the content and add the sentence: I can edit files. I am a happy local Agent!
 3. Save it to altered_foobar.txt
 `)
 	executor1 := agent.NewExecutor(agent1, agent.WithShowMessages())
 
-	var wg sync.WaitGroup
-	wg.Add(1)
-
-	go func() {
-		defer wg.Done()
-		executor1.Run(context.TODO())
-		finalAnswer1, _ := agent1.GetFinalAnswer()
-		fmt.Println("Agent 1 final answer:", finalAnswer1)
-	}()
-
-	wg.Wait()
-	fmt.Println("Task completed")
+	executor1.Run(context.TODO())
+	finalAnswer1, _ := agent1.GetFinalAnswer()
+	fmt.Println("Agent 1 final answer:", finalAnswer1)
 }
 
 func (c OpenFile) Name() string { return "OpenFile" }

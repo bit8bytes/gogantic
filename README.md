@@ -44,7 +44,6 @@ Go to [Examples](/docs/EXAMPLES.md) for more info.
     <td align="center">
       <img src="https://avatars.githubusercontent.com/u/184933573" width="64px" style="border-radius: 50%;" alt="Contributor Avatar"/>
     </td>
-  
   </tr>
 </table>
 

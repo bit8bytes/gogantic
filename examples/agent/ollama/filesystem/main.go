@@ -10,6 +10,7 @@ import (
 
 	"github.com/bit8bytes/gogantic/agent"
 	"github.com/bit8bytes/gogantic/llm/ollama"
+	"github.com/bit8bytes/gogantic/runner"
 	"github.com/bit8bytes/gogantic/tool"
 )
 
@@ -36,16 +37,16 @@ func main() {
 		"WriteAndSaveToFile": WriteAndSaveToFile{},
 	}
 
-	agent1 := agent.New(llm, tools)
-	agent1.Task(`
+	agent := agent.New(llm, tools)
+	agent.Task(`
 1. Open the file foobar.txt. 
 2. Read the content and add the sentence: I can edit files. I am a happy local Agent!
 3. Save it to altered_foobar.txt
 `)
-	executor1 := agent.NewExecutor(agent1, agent.WithShowMessages())
+	runner := runner.New(agent, runner.WithShowMessages())
 
-	executor1.Run(context.TODO())
-	finalAnswer1, _ := agent1.GetFinalAnswer()
+	runner.Run(context.TODO())
+	finalAnswer1, _ := agent.GetFinalAnswer()
 	fmt.Println("Agent 1 final answer:", finalAnswer1)
 }
 

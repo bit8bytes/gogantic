@@ -20,7 +20,7 @@ Install using `go get github.com/bit8bytes/gogantic/pipe`
 
 ## 2. Agent
 
-`Tools -> Agent -> Executor -> Final Result`
+`Tools -> Agent -> Runner -> Final Result`
 
 Agents can interact with tools and get informationen from the outside world. The following example shows an agent that can access the current temperature.
 
@@ -34,8 +34,8 @@ tools := map[string]tool.Tool{
 weatherAgent := agents.New(llm, tools)
 weatherAgent.Task("1. What is the temperature outside? 2. What is the temperature in Celsius?")
 
-executor := agents.NewExecutor(weatherAgent)
-executor.Run(context.TODO())
+runner := runner.New(weatherAgent)
+runner.Run(context.TODO())
 
 finalAnswer, _ := weatherAgent.GetFinalAnswer()
 fmt.Println(finalAnswer)

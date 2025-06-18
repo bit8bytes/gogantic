@@ -6,24 +6,6 @@ import (
 	"github.com/bit8bytes/gogantic/llm"
 )
 
-const (
-	Reset     = "\033[0m"
-	Bold      = "\033[1m"
-	Red       = "\033[31m"
-	Green     = "\033[32m"
-	Yellow    = "\033[33m"
-	Blue      = "\033[34m"
-	Magenta   = "\033[35m"
-	Cyan      = "\033[36m"
-	White     = "\033[37m"
-	BgRed     = "\033[41m"
-	BgGreen   = "\033[42m"
-	BgYellow  = "\033[43m"
-	BgBlue    = "\033[44m"
-	BgMagenta = "\033[45m"
-	BgCyan    = "\033[46m"
-)
-
 func (a *Agent) addObservationMessage(observation string) {
 	a.Messages = append(a.Messages, llm.Message{
 		Role:    "system", // Use system role for observations

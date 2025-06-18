@@ -9,6 +9,7 @@ import (
 
 	"github.com/bit8bytes/gogantic/agent"
 	"github.com/bit8bytes/gogantic/llm/openai"
+	"github.com/bit8bytes/gogantic/runner"
 	"github.com/bit8bytes/gogantic/tool"
 )
 
@@ -43,10 +44,10 @@ func main() {
 	weatherAgent := agent.New(llm, tools)
 	weatherAgent.Task("What is the temperature outside?")
 
-	executor := agent.NewExecutor(weatherAgent,
-		agent.WithIterationLimit(10),
-		agent.WithShowMessages())
-	executor.Run(context.TODO())
+	runner := runner.New(weatherAgent,
+		runner.WithIterationLimit(10),
+		runner.WithShowMessages())
+	runner.Run(context.TODO())
 
 	finalAnswer, _ := weatherAgent.GetFinalAnswer()
 	fmt.Println(finalAnswer)

@@ -31,7 +31,7 @@ The Core groups the following modules: `Input`, `LLM`, `Output`, and `Pipe`. The
 
 There is currently an experimental agent implementation that follows the ReAct pattern to call tools. The current focus remains on the Core.
 
-In short, the Agent consists of three components: `Tools -> Agent -> Executor`. The executor runs multiple cycles until the LLM returns a final result.
+In short, the Agent consists of three components: `Tools -> Agent -> Runner`. The Runner runs multiple cycles until the LLM returns a final result.
 
 ---
 

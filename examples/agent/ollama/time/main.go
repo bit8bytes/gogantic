@@ -7,6 +7,7 @@ import (
 
 	"github.com/bit8bytes/gogantic/agent"
 	"github.com/bit8bytes/gogantic/llm/ollama"
+	"github.com/bit8bytes/gogantic/runner"
 	"github.com/bit8bytes/gogantic/tool"
 )
 
@@ -29,8 +30,8 @@ func main() {
 	timeAgent.Task("What time is it?")
 
 	ctx := context.TODO()
-	executor := agent.NewExecutor(timeAgent, agent.WithShowMessages())
-	executor.Run(ctx)
+	runner := runner.New(timeAgent, runner.WithShowMessages())
+	runner.Run(ctx)
 
 	finalAnswer, _ := timeAgent.GetFinalAnswer()
 	fmt.Println(finalAnswer)

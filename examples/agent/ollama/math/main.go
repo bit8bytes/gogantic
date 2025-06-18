@@ -10,6 +10,7 @@ import (
 	"github.com/bit8bytes/gogantic/llm/ollama"
 	"github.com/bit8bytes/gogantic/output"
 	"github.com/bit8bytes/gogantic/output/separator"
+	"github.com/bit8bytes/gogantic/runner"
 	"github.com/bit8bytes/gogantic/tool"
 )
 
@@ -34,8 +35,8 @@ func main() {
 	mathAgent.Task("What is 22 * 13?")
 
 	ctx := context.TODO()
-	executor := agent.NewExecutor(mathAgent, agent.WithShowMessages())
-	executor.Run(ctx)
+	runner := runner.New(mathAgent, runner.WithShowMessages())
+	runner.Run(ctx)
 
 	finalAnswer, _ := mathAgent.GetFinalAnswer()
 	fmt.Println(finalAnswer)

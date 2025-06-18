@@ -3,13 +3,13 @@ package main
 import (
 	"context"
 	"fmt"
+	"math/rand/v2"
 	"net/url"
 
 	"github.com/bit8bytes/gogantic/embedder"
 	"github.com/bit8bytes/gogantic/llm/ollama"
 	"github.com/bit8bytes/gogantic/store"
 	"github.com/bit8bytes/gogantic/store/qdrant"
-	"github.com/google/uuid"
 )
 
 func main() {
@@ -46,12 +46,12 @@ func main() {
 
 	docs := []store.Document{
 		{
-			ID:       uuid.NewString(),
+			ID:       fmt.Sprint(rand.Int()),
 			Content:  "Take a leisurely walk in the park and enjoy the fresh air.",
 			Metadata: map[string]any{"content": "Take a leisurely walk in the park and enjoy the fresh air."},
 		},
 		{
-			ID:       uuid.NewString(),
+			ID:       fmt.Sprint(rand.Int()),
 			Content:  "Visit a local museum and discover something new.",
 			Metadata: map[string]any{"content": "Visit a local museum and discover something new."},
 		},

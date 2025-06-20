@@ -1,1 +1,0 @@
-Hello Foo!I can edit files. I am a happy local Agent!

@@ -18,50 +18,20 @@
 
 ## 🏛️ System Design
 
-### Core
+### Pipe
 
-The Core groups the following modules: `Input`, `LLM`, `Output`, and `Pipe`. The image below illustrates this concept.
+The Pipe groups the following modules: `Input`, `LLM`, and `Output`. The image below illustrates this concept.
 
 ![High Level Design](/docs/concept/core.svg)  
-**Caption**: The image shows the three core components — `Input`, `LLM`, and `Output`. A session is defined as the flow from `Input` to `Output`, enabling fine-grained observability.
-
----
-
-### Agent
-
-There is currently an experimental agent implementation that follows the ReAct pattern to call tools. The current focus remains on the Core.
-
-In short, the Agent consists of three components: `Tools -> Agent -> Runner`. The Runner runs multiple cycles until the LLM returns a final result.
+**Caption**: The image shows the three Pipe components — `Input`, `LLM`, and `Output`. A session is defined as the flow from `Input` to `Output`, enabling fine-grained observability.
 
 ---
 
 ## 🚴🏽‍♂️ Roadmap
 
-The focus is first **observability**, then **security**, and finally **compliance** within the Gogantic Core.
+The focus is first **observability**, then **security**, and finally **compliance** within the Gogantic.
 
-### Phase 1
-
-**Objective**: Implement observability into Gogantic Core
-
-- [x] Build core components to interact with large language models
-- [ ] Conduct research and developer/company interviews to validate the need for lightweight LLM interaction (focused on observability, security, and compliance)
-- [ ] Publish observability flow for core components
-- [ ] Release Gogantic Core with observability support for beta testing
-
-### Phase 2
-
-_To be determined_
-
-### Phase 3
-
-_To be determined_
-
-### Side Projects
-
-We are also working on an agent capable of autonomously executing tasks. Here's the current status:
-
-- ✅ Create an agent that can interact with external tools
-- 🔜 Develop a **Director Agent** to manage complex tasks by coordinating multiple agents
+We are actively discorvering what is needed to make LLMs accessible and usable by developers.
 
 ---
 

@@ -3,8 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"log/slog"
-	"os"
 
 	"github.com/bit8bytes/gogantic/input/chat"
 	"github.com/bit8bytes/gogantic/llm"
@@ -25,7 +23,7 @@ func main() {
 		},
 	})
 
-	data := map[string]interface{}{
+	data := map[string]any{
 		"inputLanguage":  "English",
 		"outputLanguage": "Spanish",
 		"text":           "I love programming.",
@@ -42,8 +40,6 @@ func main() {
 		Stream:  false,
 	}
 
-	slog.SetDefault(slog.New(slog.NewJSONHandler(os.Stdout, nil)))
-
 	llm := ollama.New(model)
 	var parser output.Parser[[]string] = &separator.Space{}
 
@@ -51,5 +47,4 @@ func main() {
 	pipe := pipe.New(messages, llm, parser)
 	result, _ := pipe.Invoke(ctx)
 	fmt.Println(*result)
-
 }

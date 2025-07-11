@@ -25,7 +25,18 @@ fmt.Println("Translate from", result.InputLanguage, " to ", result.OutputLanguag
 fmt.Println("Result: ", result.Text)
 ```
 
-Go to [Examples](/docs/EXAMPLES.md) for more info.
+### MCP Tool Calling
+
+Gogantic supports MCP (Model Context Protocol) for tool calling:
+
+```go
+// Create MCP-enabled pipe with tool calling
+mcpPipe := pipe.NewMCP(messages, llm, parser, mcpClient)
+result, _ := mcpPipe.InvokeWithTools(context.Background())
+fmt.Println("Answer:", result.Answer)
+```
+
+Go to [Examples](/docs/EXAMPLES.md) and [MCP Documentation](/docs/MCP.md) for more info.
 
 ## 📚 Sources and Inspiration
 

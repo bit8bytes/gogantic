@@ -34,9 +34,9 @@ type ChoiceResponse struct {
 		Role    string `json:"role"`
 		Content string `json:"content"`
 	} `json:"message"`
-	Logprobs     interface{} `json:"logprobs"`
-	FinishReason string      `json:"finish_reason"`
-	Index        int         `json:"index"`
+	Logprobs     any    `json:"logprobs"`
+	FinishReason string `json:"finish_reason"`
+	Index        int    `json:"index"`
 }
 
 type UsageResponse struct {

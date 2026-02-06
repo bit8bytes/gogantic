@@ -11,7 +11,7 @@ import (
 
 func main() {
 	// We use a chat prompt from the core/input
-	prompt, _ := chat.New([]llm.Message{
+	prompt := chat.New([]llm.Message{
 		{Role: "system", Content: "You are a helpful assistant that translates {{.inputLanguage}} to {{.outputLanguage}}."},
 		{Role: "user", Content: "{{.text}}"},
 	})

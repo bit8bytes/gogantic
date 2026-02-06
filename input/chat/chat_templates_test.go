@@ -12,10 +12,7 @@ func TestNewChatPromptTemplate(t *testing.T) {
 		{Role: "user", Content: "{{.text}}"},
 	}
 
-	chatPrompt, err := New(messages)
-	if err != nil {
-		t.Fatalf("unexpected error creating chat prompt template: %v", err)
-	}
+	chatPrompt := New(messages)
 
 	if chatPrompt == nil {
 		t.Errorf("expected chat prompt to be initialized, got nil")
@@ -31,10 +28,7 @@ func TestChatPromptTemplateFormatMessages(t *testing.T) {
 		{Role: "user", Content: "{{.text}}"},
 	}
 
-	chatPrompt, err := New(messages)
-	if err != nil {
-		t.Fatalf("unexpected error creating chat prompt template: %v", err)
-	}
+	chatPrompt := New(messages)
 
 	data := map[string]any{
 		"inputLanguage":  "English",

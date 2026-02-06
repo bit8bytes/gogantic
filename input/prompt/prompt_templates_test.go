@@ -6,29 +6,18 @@ import (
 
 func TestNewPromptTemplate(t *testing.T) {
 	validTemplateString := "Hello, {{.name}}!"
-	invalidTemplateString := "Hello, {{.name}"
 
 	tests := []struct {
 		name        string
 		templateStr string
-		shouldError bool
+		shouldPanic bool
 	}{
 		{"Valid Template", validTemplateString, false},
-		{"Invalid Template", invalidTemplateString, true},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			pt, err := New(tt.templateStr)
-			if tt.shouldError {
-				if err == nil {
-					t.Errorf("expected error, got nil")
-				}
-				return
-			}
-			if err != nil {
-				t.Errorf("did not expect error, got %v", err)
-			}
+			pt := New(tt.templateStr)
 			if pt.Template == nil {
 				t.Errorf("expected template to be initialized, got nil")
 			}
@@ -36,12 +25,21 @@ func TestNewPromptTemplate(t *testing.T) {
 	}
 }
 
+func TestNewPromptTemplateInvalidPanics(t *testing.T) {
+	invalidTemplateString := "Hello, {{.name}"
+
+	defer func() {
+		if r := recover(); r == nil {
+			t.Errorf("expected panic for invalid template, but did not panic")
+		}
+	}()
+
+	New(invalidTemplateString)
+}
+
 func TestFormat(t *testing.T) {
 	tmplStr := "Hello, {{.Name}}!"
-	pt, err := New(tmplStr)
-	if err != nil {
-		t.Fatalf("unexpected error creating template: %v", err)
-	}
+	pt := New(tmplStr)
 
 	tests := []struct {
 		name       string

@@ -13,12 +13,12 @@ type Prompt struct {
 	Content string
 }
 
-func New(templateString string) (*Template, error) {
+func New(templateString string) *Template {
 	tmpl, err := template.New("go-template").Parse(templateString)
 	if err != nil {
-		return nil, err
+		panic(err)
 	}
-	return &Template{Template: tmpl}, nil
+	return &Template{Template: tmpl}
 }
 
 func (pt *Template) Format(data any) (string, error) {

@@ -11,8 +11,8 @@ type PromptTemplate struct {
 	Messages []llm.Message
 }
 
-func New(messages []llm.Message) (*PromptTemplate, error) {
-	return &PromptTemplate{Messages: messages}, nil
+func New(messages []llm.Message) *PromptTemplate {
+	return &PromptTemplate{Messages: messages}
 }
 
 func (cpt *PromptTemplate) Format(data any) ([]llm.Message, error) {

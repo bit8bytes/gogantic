@@ -13,7 +13,7 @@ import (
 )
 
 func main() {
-	chatPrompt, _ := chat.New([]llm.Message{
+	chatPrompt := chat.New([]llm.Message{
 		{
 			Role:    "system",
 			Content: "You are a helpful assistant that translates {{.inputLanguage}} to {{.outputLanguage}}."},

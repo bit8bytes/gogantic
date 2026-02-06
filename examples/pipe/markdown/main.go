@@ -17,7 +17,7 @@ type BlogArticle struct {
 }
 
 func main() {
-	chatPrompt, _ := chat.New([]llm.Message{
+	chatPrompt := chat.New([]llm.Message{
 		{Role: "system", Content: "You are a helpful assistant that generates an exciting and engaging blog article. The user will give you the topic. Keep it short for now."},
 		{Role: "user", Content: "Topic: {{.Topic}}"},
 	})

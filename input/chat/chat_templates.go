@@ -11,11 +11,11 @@ type PromptTemplate struct {
 	Messages []llm.Message
 }
 
-func New(messages []llm.Message) (*PromptTemplate, error) {
-	return &PromptTemplate{Messages: messages}, nil
+func New(messages []llm.Message) *PromptTemplate {
+	return &PromptTemplate{Messages: messages}
 }
 
-func (cpt *PromptTemplate) Format(data interface{}) ([]llm.Message, error) {
+func (cpt *PromptTemplate) Format(data any) ([]llm.Message, error) {
 	var formattedMessages []llm.Message
 
 	for _, templat := range cpt.Messages {

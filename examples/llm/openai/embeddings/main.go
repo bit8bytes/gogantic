@@ -11,7 +11,7 @@ import (
 )
 
 func main() {
-	companyNamePrompt, _ := prompt.New("What is a good name for a company that makes {{.product}}?")
+	companyNamePrompt := prompt.New("What is a good name for a company that makes {{.product}}?")
 
 	data := map[string]any{"product": "coloful socks"}
 	companyNameFormattedPrompt, _ := companyNamePrompt.Format(data)

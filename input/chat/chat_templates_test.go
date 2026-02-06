@@ -36,7 +36,7 @@ func TestChatPromptTemplateFormatMessages(t *testing.T) {
 		t.Fatalf("unexpected error creating chat prompt template: %v", err)
 	}
 
-	data := map[string]interface{}{
+	data := map[string]any{
 		"inputLanguage":  "English",
 		"outputLanguage": "French",
 		"text":           "I love programming.",

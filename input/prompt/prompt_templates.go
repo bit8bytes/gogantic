@@ -21,7 +21,7 @@ func New(templateString string) (*Template, error) {
 	return &Template{Template: tmpl}, nil
 }
 
-func (pt *Template) Format(data interface{}) (string, error) {
+func (pt *Template) Format(data any) (string, error) {
 	var promptBuffer bytes.Buffer
 	err := pt.Template.Execute(&promptBuffer, data)
 	if err != nil {

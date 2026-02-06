@@ -15,7 +15,7 @@ func New(messages []llm.Message) (*PromptTemplate, error) {
 	return &PromptTemplate{Messages: messages}, nil
 }
 
-func (cpt *PromptTemplate) Format(data interface{}) ([]llm.Message, error) {
+func (cpt *PromptTemplate) Format(data any) ([]llm.Message, error) {
 	var formattedMessages []llm.Message
 
 	for _, templat := range cpt.Messages {

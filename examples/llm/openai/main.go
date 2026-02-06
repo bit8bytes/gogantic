@@ -18,7 +18,7 @@ func main() {
 		{Role: "user", Content: "{{.text}}"},
 	})
 
-	data := map[string]interface{}{
+	data := map[string]any{
 		"inputLanguage":  "English",
 		"outputLanguage": "French",
 		"text":           "I love programming.",

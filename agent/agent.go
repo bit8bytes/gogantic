@@ -27,6 +27,8 @@ func getToolNames(tools map[string]tool.Tool) string {
 	return strings.Join(names, ", ")
 }
 
+type Options func(*Agent)
+
 func New(model llm.LLM, tools map[string]tool.Tool) *Agent {
 	toolNames := getToolNames(tools)
 	initialMessages := setupReActPromptInitialMessages(toolNames)
@@ -40,7 +42,7 @@ func New(model llm.LLM, tools map[string]tool.Tool) *Agent {
 
 // Task the agent is going to execute
 func (a *Agent) Task(prompt string) {
-	chatPrompt, _ := chat.New([]llm.Message{{Role: "user", Content: "Question: {{.input}}\n"}})
+	chatPrompt := chat.New([]llm.Message{{Role: "user", Content: "Question: {{.input}}\n"}})
 
 	data := map[string]any{"input": prompt}
 
@@ -157,7 +159,7 @@ func (a *Agent) GetFinalAnswer() (string, error) {
 }
 
 func setupReActPromptInitialMessages(tools string) []llm.Message {
-	reActPrompt, _ := chat.New([]llm.Message{
+	reActPrompt := chat.New([]llm.Message{
 		{Role: "user", Content: `
 Answer the following questions as best you can. 
 Use only values from the tools. Do not estimate or predict values.	

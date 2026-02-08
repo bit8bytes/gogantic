@@ -11,60 +11,54 @@ import (
 	"github.com/bit8bytes/gogantic/llms"
 )
 
-type LLM interface {
+type llm interface {
 	Generate(ctx context.Context, messages []llms.Message) (*llms.ContentResponse, error)
 }
 
 type Tool interface {
 	Name() string
-	Call(ctx context.Context, input tools.Input) (tools.Output, error)
+	Execute(ctx context.Context, input tools.Input) (tools.Output, error)
 }
 
 type Agent struct {
-	Model    LLM
-	Tools    map[string]Tool
+	model    llm
+	tools    map[string]Tool
 	Messages []llms.Message
-	Actions  []Action
+	actions  []Action
 }
 
-func getToolNames(tools map[string]Tool) string {
-	names := ""
-	for _, tool := range tools {
-		names += ", " + tool.Name()
-	}
-	return names
-}
-
-type Options func(*Agent)
-
-func New(model LLM, tools map[string]Tool) *Agent {
-	toolNames := getToolNames(tools)
-	initialMessages := setupReActPromptInitialMessages(toolNames)
-
+func New(model llm, tools map[string]Tool, messages []llms.Message) *Agent {
 	return &Agent{
-		Model:    model,
-		Tools:    tools,
-		Messages: initialMessages,
+		model:    model,
+		tools:    tools,
+		Messages: messages,
 	}
 }
 
-// Task the agent is going to execute
-func (a *Agent) Task(prompt string) {
-	chatPrompt := chats.New([]llms.Message{{Role: "user", Content: "Question: {{.input}}\n"}})
+func (a *Agent) Task(prompt string) error {
+	messages := chats.New([]llms.Message{
+		{
+			Role:    "user",
+			Content: "Question: {{.Input}}\n",
+		},
+	})
 
-	data := map[string]any{"input": prompt}
+	type task struct {
+		Input string
+	}
 
-	formattedMessages, err := chatPrompt.Execute(data)
+	formattedMessages, err := messages.Execute(task{Input: prompt})
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	a.Messages = append(a.Messages, formattedMessages...)
+	return nil
 }
 
 // Identifies the generated messages and splits them into thought, action and action input
 func (a *Agent) Plan(ctx context.Context) (*Response, error) {
-	generatedContent, err := a.Model.Generate(ctx, a.Messages)
+	generatedContent, err := a.model.Generate(ctx, a.Messages)
 	if err != nil {
 		return nil, err
 	}
@@ -105,7 +99,7 @@ func (a *Agent) Plan(ctx context.Context) (*Response, error) {
 			a.addActionInputMessage("\"\"")
 		}
 
-		a.Actions = []Action{
+		a.actions = []Action{
 			{
 				Tool:      tool,
 				ToolInput: inputText,
@@ -120,7 +114,7 @@ func (a *Agent) Plan(ctx context.Context) (*Response, error) {
 
 // Uses the given tools to get observations
 func (a *Agent) Act(ctx context.Context) {
-	for _, action := range a.Actions {
+	for _, action := range a.actions {
 		if !a.handleAction(ctx, action) {
 			return
 		}
@@ -130,7 +124,7 @@ func (a *Agent) Act(ctx context.Context) {
 
 // Handle action is a helper function that calls the tool selected by the LLM and adds the observation output
 func (a *Agent) handleAction(ctx context.Context, action Action) bool {
-	t, exists := a.Tools[action.Tool]
+	t, exists := a.tools[action.Tool]
 	if !exists {
 		a.addObservationMessage("The Action: [" + action.Tool + "] doesn't exist.")
 		return false
@@ -140,7 +134,7 @@ func (a *Agent) handleAction(ctx context.Context, action Action) bool {
 		Content: action.ToolInput,
 	}
 
-	observation, err := t.Call(ctx, i)
+	observation, err := t.Execute(ctx, i)
 	if err != nil {
 		a.addObservationMessage("Error: " + err.Error())
 		return false
@@ -151,10 +145,10 @@ func (a *Agent) handleAction(ctx context.Context, action Action) bool {
 }
 
 func (a *Agent) clearActions() {
-	a.Actions = nil
+	a.actions = nil
 }
 
-func (a *Agent) GetFinalAnswer() (string, error) {
+func (a *Agent) Answer() (string, error) {
 	if len(a.Messages) == 0 {
 		return "", errors.New("No messages provided")
 	}

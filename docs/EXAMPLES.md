@@ -1,19 +1,25 @@
 # Examples
 
-## Usage of Pipe: Input, LLM, Output
+## Pipe
 
-Core enables simple interaction with LLMs. The concept is simple:
+Pipe enables simple interaction with LLMs. The concept is simple:
 
 `Input -> LLM -> Output`
 
-You just have to prepare the messages, add a model and define the output (e.g. json)
+You just have to:
+
+1. prepare the messages (prompt/chat),
+2. add a model, and 
+3. define the json output parser
+
 
 ```go
-// This is not the full example. See 'examples/pipe'
-pipe := pipe.New(messages, ollamaClient, parser)
+pipe := pipe.New(messages, client, parser)
 result, _ := pipe.Invoke(context.Background())
 fmt.Println("Translate from", result.InputLanguage, " to ", result.OutputLanguage)
 fmt.Println("Result: ", result.Text)
 ```
 
-Install using `go get github.com/bit8bytes/gogantic/pipe`
+## See also
+
+* Full example of [pipe](../examples/pipes/json/main.go).

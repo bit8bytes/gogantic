@@ -1,17 +1,12 @@
 # Interacting with LLMs in Go has never been easier.
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) [![Test](https://github.com/bit8bytes/gogantic/actions/workflows/test_cmd_app.yml/badge.svg)](https://github.com/bit8bytes/gogantic/actions/workflows/tests.yml)
 
-Meet Gogo the Giant Gopher.
+Meet Gogo the standing chick. 🐥.
 
-<p align="center"> <img src="/docs/img/gogantic-mascot.png" alt="Gogantic Mascot" width="250"/></p>
-
-Gogo helps you work with LLMs in Go(lang) — without external dependencies.
-Gogo speeds up your interactions with LLMs while keeping your stack lean and efficient.
-
-## 🚴🏽‍♂️ Roadmap
-
-See [Roadmap](/docs/GET-INVOLVED.md#%EF%B8%8F-roadmap).
+* Gogo helps you work with LLMs in Go(lang) — without external dependencies
+* Gogo keeps your stack lean and efficient
+* Gogo can be run everywhere using minimal resources pointing to a LLM
 
 ## Example:
 
@@ -25,9 +20,9 @@ fmt.Println("Translate from", result.InputLanguage, " to ", result.OutputLanguag
 fmt.Println("Result: ", result.Text)
 ```
 
-Go to [Examples](/docs/EXAMPLES.md) for more info.
-
 ## 📚 Sources and Inspiration
+
+Note, these inspirations have different goals then Gogo but are worth looking into.
 
 - [tmc/langchaingo](https://github.com/tmc/langchaingo)
 

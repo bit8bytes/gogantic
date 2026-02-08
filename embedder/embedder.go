@@ -3,19 +3,23 @@ package embedder
 import (
 	"context"
 
-	"github.com/bit8bytes/gogantic/llm"
+	"github.com/bit8bytes/gogantic/llms"
 )
 
-type Embedder struct {
-	LLM llm.LLM
+type llm interface {
+	GenerateEmbedding(ctx context.Context, prompt string) (llms.EmbeddingResponse, error)
 }
 
-func New(llm llm.LLM) *Embedder {
-	return &Embedder{
-		LLM: llm,
+type embedder struct {
+	llm llm
+}
+
+func New(llm llm) *embedder {
+	return &embedder{
+		llm: llm,
 	}
 }
 
-func (e *Embedder) EmbedQuery(ctx context.Context, query string) (llm.EmbeddingResponse, error) {
-	return e.LLM.GenerateEmbedding(ctx, query)
+func (e *embedder) Embed(ctx context.Context, query string) (llms.EmbeddingResponse, error) {
+	return e.llm.GenerateEmbedding(ctx, query)
 }

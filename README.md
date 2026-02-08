@@ -1,6 +1,6 @@
 # Interacting with LLMs in Go has never been easier.
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) [![Test](https://github.com/bit8bytes/gogantic/actions/workflows/tests.yml/badge.svg)] [![Sec Scan](https://github.com/bit8bytes/gogantic/actions/workflows/sec_scan.yml/badge.svg)]
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) ![Test](https://github.com/bit8bytes/gogantic/actions/workflows/tests.yml/badge.svg) ![Sec Scan](https://github.com/bit8bytes/gogantic/actions/workflows/sec_scan.yml/badge.svg)
 
 Meet Gogo the standing chick. 🐥.
 

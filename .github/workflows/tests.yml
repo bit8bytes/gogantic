@@ -1,0 +1,36 @@
+name: Test cmd/web
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version-file: 'go.mod'
+
+      - name: Download dependencies
+        run: go mod download
+
+      - name: Format code
+        run: go fmt ./...
+
+      - name: Vet code
+        run: go vet ./...
+
+      - name: Run tests
+        run: go test -race -vet=off ./...
+
+      - name: Test coverage
+        run: |
+          go test -covermode=count -coverprofile=coverage.out ./...

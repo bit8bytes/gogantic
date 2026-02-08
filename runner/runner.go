@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/bit8bytes/gogantic/agent"
+	"github.com/bit8bytes/gogantic/agents"
 )
 
 const (
@@ -26,7 +26,7 @@ const (
 )
 
 type Runner struct {
-	Agent          *agent.Agent
+	Agent          *agents.Agent
 	IterationLimit int
 	printMessages  bool
 }
@@ -45,7 +45,7 @@ func WithShowMessages() RunnerOption {
 	}
 }
 
-func New(agent *agent.Agent, opts ...RunnerOption) *Runner {
+func New(agent *agents.Agent, opts ...RunnerOption) *Runner {
 	e := &Runner{
 		Agent:          agent,
 		IterationLimit: 10,
@@ -59,7 +59,6 @@ func New(agent *agent.Agent, opts ...RunnerOption) *Runner {
 	return e
 }
 
-// Updated Run function for your Runner
 func (e *Runner) Run(ctx context.Context) {
 	for i := 1; i < e.IterationLimit; i++ {
 		todos, err := e.Agent.Plan(ctx)

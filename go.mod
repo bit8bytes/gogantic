@@ -1,3 +1,3 @@
 module github.com/bit8bytes/gogantic
 
-go 1.23.3
+go 1.25.7

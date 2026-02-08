@@ -4,6 +4,7 @@ package pipes
 
 import (
 	"context"
+	"log/slog"
 
 	"github.com/bit8bytes/gogantic/llms"
 )
@@ -24,6 +25,7 @@ type Pipe[T any] struct {
 	messages []llms.Message
 	model    llm
 	parser   parser[T]
+	logger   *slog.Logger
 }
 
 // New creates a new Pipe with the given messages, model, and parser.

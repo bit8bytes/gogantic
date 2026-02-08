@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/bit8bytes/gogantic/outputs/json"
+	"github.com/bit8bytes/gogantic/outputs/jsonout"
 )
 
 type joke struct {
@@ -12,7 +12,7 @@ type joke struct {
 }
 
 func main() {
-	parser := json.NewParser[joke]()
+	parser := jsonout.NewParser[joke]()
 	joke, err := parser.Parse(`
 	{ 
 		"setup": "Why don't scientists trust atoms?", 

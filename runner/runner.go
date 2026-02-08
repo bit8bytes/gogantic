@@ -1,3 +1,6 @@
+// Package runner provides execution orchestration for agentic Plan-Act loops.
+// It manages the iterative cycle of planning and acting until task completion
+// or iteration limits are reached.
 package runner
 
 import (
@@ -5,83 +8,82 @@ import (
 	"fmt"
 
 	"github.com/bit8bytes/gogantic/agents"
+	"github.com/bit8bytes/gogantic/inputs/roles"
 )
 
 const (
-	Reset     = "\033[0m"
-	Bold      = "\033[1m"
-	Red       = "\033[31m"
-	Green     = "\033[32m"
-	Yellow    = "\033[33m"
-	Blue      = "\033[34m"
-	Magenta   = "\033[35m"
-	Cyan      = "\033[36m"
-	White     = "\033[37m"
-	BgRed     = "\033[41m"
-	BgGreen   = "\033[42m"
-	BgYellow  = "\033[43m"
-	BgBlue    = "\033[44m"
-	BgMagenta = "\033[45m"
-	BgCyan    = "\033[46m"
+	reset = "\033[0m"
+	blue  = "\033[34m"
+	green = "\033[32m"
+	cyan  = "\033[36m"
+	white = "\033[37m"
 )
 
-type Runner struct {
-	Agent          *agents.Agent
-	IterationLimit int
-	printMessages  bool
+// runner executes an agent's Plan-Act loop.
+type runner struct {
+	agent             *agents.Agent
+	iterationLimit    int
+	printMessages     bool
+	lastPrintedMsgIdx int
 }
 
-type RunnerOption func(*Runner)
-
-func WithIterationLimit(limit int) RunnerOption {
-	return func(e *Runner) {
-		e.IterationLimit = limit
+// New creates a Runner with the given agent, iteration limit, and message printing option.
+func New(agent *agents.Agent, iterationLimit int, printMessages bool) *runner {
+	return &runner{
+		agent:             agent,
+		iterationLimit:    iterationLimit,
+		printMessages:     printMessages,
+		lastPrintedMsgIdx: -1,
 	}
 }
 
-func WithShowMessages() RunnerOption {
-	return func(e *Runner) {
-		e.printMessages = true
-	}
-}
-
-func New(agent *agents.Agent, opts ...RunnerOption) *Runner {
-	e := &Runner{
-		Agent:          agent,
-		IterationLimit: 10,
-		printMessages:  false,
-	}
-
-	for _, opt := range opts {
-		opt(e)
-	}
-
-	return e
-}
-
-func (e *Runner) Run(ctx context.Context) {
-	for i := 1; i < e.IterationLimit; i++ {
-		todos, err := e.Agent.Plan(ctx)
+// Run executes the agent's Plan-Act loop until completion or iteration limit.
+func (r *runner) Run(ctx context.Context) error {
+	for i := 0; i < r.iterationLimit; i++ {
+		response, err := r.agent.Plan(ctx)
 		if err != nil {
-			fmt.Println("Error planning:", err)
-			break
+			return fmt.Errorf("planning failed: %w", err)
 		}
 
-		if todos.Finish {
-			break
+		if response.Finish {
+			r.printNewMessages()
+			return nil
 		}
 
-		e.Agent.Act(ctx)
+		r.agent.Act(ctx)
 
-		if e.printMessages && len(e.Agent.Messages) > 0 {
-			thought := fmt.Sprintf("%s: %s", e.Agent.Messages[len(e.Agent.Messages)-4].Role, e.Agent.Messages[len(e.Agent.Messages)-4].Content)
-			action := fmt.Sprintf("%s: %s", e.Agent.Messages[len(e.Agent.Messages)-3].Role, e.Agent.Messages[len(e.Agent.Messages)-3].Content)
-			actionInput := fmt.Sprintf("%s: %s", e.Agent.Messages[len(e.Agent.Messages)-2].Role, e.Agent.Messages[len(e.Agent.Messages)-2].Content)
-			observation := fmt.Sprintf("%s: %s", e.Agent.Messages[len(e.Agent.Messages)-1].Role, e.Agent.Messages[len(e.Agent.Messages)-1].Content)
-			fmt.Println(Blue + thought + Reset)
-			fmt.Println(Yellow + action + Reset)
-			fmt.Println(Yellow + actionInput + Reset)
-			fmt.Println(Green + observation + Reset)
-		}
+		r.printNewMessages()
+	}
+
+	return fmt.Errorf("iteration limit reached (%d iterations)", r.iterationLimit)
+}
+
+func (r *runner) printNewMessages() {
+	if !r.printMessages {
+		return
+	}
+
+	messages := r.agent.Messages
+	startIdx := r.lastPrintedMsgIdx + 1
+
+	for i := startIdx; i < len(messages); i++ {
+		msg := messages[i]
+		color := r.getColorForRole(msg.Role)
+		fmt.Printf("%s%s: %s%s\n", color, msg.Role, msg.Content, reset)
+	}
+
+	r.lastPrintedMsgIdx = len(messages) - 1
+}
+
+func (r *runner) getColorForRole(role roles.Role) string {
+	switch role {
+	case roles.Assistent:
+		return blue
+	case roles.System:
+		return green
+	case roles.User:
+		return cyan
+	default:
+		return white
 	}
 }

@@ -1,21 +1,20 @@
 package agents
 
-type Step struct {
-	Thought     string
-	Actions     string
-	Observation string
+// AgentResponse is the JSON schema the LLM produces each iteration.
+type AgentResponse struct {
+	Thought     string `json:"thought"`
+	Action      string `json:"action"`
+	ActionInput string `json:"action_input"`
+	FinalAnswer string `json:"final_answer"`
 }
 
+// Action is the internal representation of a tool call extracted from AgentResponse.
 type Action struct {
 	Tool      string
 	ToolInput string
-	ToolID    string
 }
 
-type Finish struct {
-	ReturnValues map[string]any
-}
-
+// Response indicates whether the agent loop should continue or finish.
 type Response struct {
 	Actions []Action
 	Finish  bool

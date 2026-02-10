@@ -1,3 +1,9 @@
+// Package agents implements the ReAct (Reasoning and Acting) pattern for LLM-powered agents.
+//
+// Agents alternate between reasoning about a task and executing tool actions,
+// with each observation feeding back into the next reasoning step.
+// Use New to create an agent, Task to set the goal, then repeatedly call Plan
+// and Act until the agent signals completion.
 package agents
 
 import (
@@ -7,112 +13,100 @@ import (
 	"strings"
 
 	"github.com/bit8bytes/gogantic/agents/tools"
-	"github.com/bit8bytes/gogantic/inputs/chats"
+	"github.com/bit8bytes/gogantic/inputs/roles"
 	"github.com/bit8bytes/gogantic/llms"
+	"github.com/bit8bytes/gogantic/outputs/jsonout"
 )
 
 type llm interface {
 	Generate(ctx context.Context, messages []llms.Message) (*llms.ContentResponse, error)
 }
 
+// Tool represents an action the agent can perform.
+// Each tool must provide a name, description, and execution logic.
 type Tool interface {
 	Name() string
+	Description() string
 	Execute(ctx context.Context, input tools.Input) (tools.Output, error)
 }
 
-type Agent struct {
-	model    llm
-	tools    map[string]Tool
-	Messages []llms.Message
-	actions  []Action
+type parser interface {
+	Parse(text string) (AgentResponse, error)
+	Instructions() string
 }
 
-func New(model llm, tools map[string]Tool, messages []llms.Message) *Agent {
+// Agent executes tasks using the ReAct pattern (reasoning + acting).
+// Call Plan to generate the next action, then Act to execute it.
+// Repeat until Plan returns Finish=true, then retrieve the result with Answer.
+type Agent struct {
+	model       llm
+	tools       map[string]Tool
+	Messages    []llms.Message
+	actions     []Action
+	parser      parser
+	finalAnswer string
+}
+
+// New creates an agent with the given model and tools.
+// The agent is initialized with a ReAct system prompt.
+func New(model llm, tools []Tool) *Agent {
+	p := jsonout.NewParser[AgentResponse]()
+	t := toolNames(tools)
+
 	return &Agent{
 		model:    model,
-		tools:    tools,
-		Messages: messages,
+		tools:    t,
+		Messages: buildReActPrompt(t, p.Instructions()),
+		parser:   p,
 	}
 }
 
+// Task sets the user's question or task for the agent to solve.
+// Call this before starting the Plan-Act loop.
 func (a *Agent) Task(prompt string) error {
-	messages := chats.New([]llms.Message{
-		{
-			Role:    "user",
-			Content: "Question: {{.Input}}\n",
-		},
+	a.Messages = append(a.Messages, llms.Message{
+		Role:    roles.User,
+		Content: "Question: " + prompt,
 	})
-
-	type task struct {
-		Input string
-	}
-
-	formattedMessages, err := messages.Execute(task{Input: prompt})
-	if err != nil {
-		return err
-	}
-
-	a.Messages = append(a.Messages, formattedMessages...)
 	return nil
 }
 
-// Identifies the generated messages and splits them into thought, action and action input
+// Plan calls the LLM to decide the next action or provide a final answer.
+// Returns Response.Finish=true when the task is complete.
 func (a *Agent) Plan(ctx context.Context) (*Response, error) {
-	generatedContent, err := a.model.Generate(ctx, a.Messages)
+	generated, err := a.model.Generate(ctx, a.Messages)
 	if err != nil {
 		return nil, err
 	}
 
-	text := generatedContent.Result
+	parsed, err := a.parser.Parse(generated.Result)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse agent response: %w", err)
+	}
 
-	final := extractAfterLabel(text, "FINAL ANSWER:")
-	if len(final) > 0 {
-		a.Messages = append(a.Messages, llms.Message{
-			Role:    "assistant",
-			Content: fmt.Sprintf("\nFinal Answer: %s", final),
-		})
+	a.addAssistantMessage(generated.Result)
 
+	if parsed.FinalAnswer != "" {
+		a.finalAnswer = parsed.FinalAnswer
 		return &Response{Finish: true}, nil
 	}
 
-	thought := extractAfterLabel(text, "Thought: ")
-
-	// "Action: [ToolName]"
-	action := extractAfterLabel(text, "Action: ")
-
-	// "Action Input: "input"
-	actionInput := extractAfterLabel(text, "Action Input: ")
-
-	if len(thought) > 1 {
-		a.addThoughtMessage(strings.TrimSpace(thought))
+	if parsed.Action == "" {
+		return nil, errors.New("agent response contains neither a final answer nor an action")
 	}
 
-	if len(action) > 1 {
-		tool := extractSquareBracketsContent(action)
-		a.addActionMessage(tool)
-
-		inputText := ""
-		if len(actionInput) > 1 {
-			inputText = removeQuotes(actionInput)
-			a.addActionInputMessage("\"" + inputText + "\"")
-		} else {
-			a.addActionInputMessage("\"\"")
-		}
-
-		a.actions = []Action{
-			{
-				Tool:      tool,
-				ToolInput: inputText,
-			},
-		}
-	} else {
-		fmt.Println("Warning: No action found in response")
+	a.actions = []Action{
+		{
+			Tool:      parsed.Action,
+			ToolInput: parsed.ActionInput,
+		},
 	}
 
 	return &Response{}, nil
 }
 
-// Uses the given tools to get observations
+// Act executes the tool chosen by Plan and adds the result as an observation.
+// Always call this after Plan (unless Plan returned Finish=true).
 func (a *Agent) Act(ctx context.Context) {
 	for _, action := range a.actions {
 		if !a.handleAction(ctx, action) {
@@ -122,19 +116,16 @@ func (a *Agent) Act(ctx context.Context) {
 	a.clearActions()
 }
 
-// Handle action is a helper function that calls the tool selected by the LLM and adds the observation output
 func (a *Agent) handleAction(ctx context.Context, action Action) bool {
 	t, exists := a.tools[action.Tool]
 	if !exists {
-		a.addObservationMessage("The Action: [" + action.Tool + "] doesn't exist.")
+		a.addObservationMessage("The action " + action.Tool + " doesn't exist.")
 		return false
 	}
 
-	i := tools.Input{
+	observation, err := t.Execute(ctx, tools.Input{
 		Content: action.ToolInput,
-	}
-
-	observation, err := t.Execute(ctx, i)
+	})
 	if err != nil {
 		a.addObservationMessage("Error: " + err.Error())
 		return false
@@ -148,91 +139,47 @@ func (a *Agent) clearActions() {
 	a.actions = nil
 }
 
+// Answer returns the final result after the agent completes the task.
+// Only call this after Plan returns Finish=true.
 func (a *Agent) Answer() (string, error) {
-	if len(a.Messages) == 0 {
-		return "", errors.New("No messages provided")
+	if a.finalAnswer == "" {
+		return "", errors.New("no final answer available")
 	}
-	finalAnswer := a.Messages[len(a.Messages)-1].Content
-	parts := strings.Split(finalAnswer, "Final Answer: ")
-	if len(parts) < 2 {
-		return "", errors.New("Invalid final answer")
-	}
-	return parts[1], nil
+	return a.finalAnswer, nil
 }
 
-func setupReActPromptInitialMessages(tools string) []llms.Message {
-	reActPrompt := chats.New([]llms.Message{
-		{Role: "user", Content: `
-Answer the following questions as best you can. 
-Use only values from the tools. Do not estimate or predict values.	
-Select the tool that fits the question:
-
-[{{.tools}}]
-
-Use the following format:
-
-Thought: you should always think about what to do
-Action: [Toolname] the action (only one at a time) to take in suqare braces e.g [NameOfTool]
-Action Input: "input" the input value for the action in quotes e.g. "value" from Schema
-Observation: the result of the action
-... (this Thought: .../Action: [Toolname]/Action Input: "input"/Observation: ... can repeat N times)
-Thought: I now know the final answer
-FINAL ANSWER: the final answer to the original input question
-
-Think in steps. Don't hallucinate. Don't make up answers.
-`},
-	})
-
-	data := map[string]interface{}{
-		"tools": tools,
+func buildReActPrompt(tools map[string]Tool, jsonInstructions string) []llms.Message {
+	var toolDescriptions strings.Builder
+	for _, t := range tools {
+		fmt.Fprintf(&toolDescriptions, "- %s: %s\n", t.Name(), t.Description())
 	}
 
-	formattedMessages, err := reActPrompt.Execute(data)
-	if err != nil {
-		panic(err)
-	}
+	return []llms.Message{
+		{
+			Role: roles.System,
+			Content: fmt.Sprintf(`
+You are an helpful agent. Answer questions using the available tools.
+Do not estimate or predict values. Use only values returned by tools.
 
-	return formattedMessages
+Available tools:
+%s
+%s
+
+Respond with a JSON object on each turn with these fields:
+- "thought": your reasoning about what to do next
+- "action": the exact tool name to call (empty string when giving final answer)
+- "action_input": the input to pass to the tool (empty string when giving final answer)
+- "final_answer": your final answer (empty string when calling a tool)
+
+Think step by step. Do not hallucinate.`, toolDescriptions.String(), jsonInstructions),
+		},
+	}
 }
 
-func extractAfterLabel(s, label string) string {
-	startIndex := strings.Index(s, label)
-	if startIndex == -1 {
-		return "" // Label not found
+func toolNames(tools []Tool) map[string]Tool {
+	t := make(map[string]Tool, len(tools))
+	for _, tool := range tools {
+		t[tool.Name()] = tool
 	}
-	startIndex += len(label)
-	for startIndex < len(s) && s[startIndex] == ' ' {
-		startIndex++
-	}
-	endIndex := strings.Index(s[startIndex:], "\n")
-	if endIndex == -1 {
-		endIndex = len(s)
-	} else {
-		endIndex += startIndex
-	}
-
-	return s[startIndex:endIndex]
-}
-
-func extractSquareBracketsContent(s string) string {
-	startIndex := strings.Index(s, "[")
-	if startIndex == -1 {
-		return "" // No opening bracket found
-	}
-
-	endIndex := strings.Index(s[startIndex:], "]")
-	if endIndex == -1 {
-		return "" // No closing bracket found
-	}
-
-	// Extract the content between brackets
-	return s[startIndex+1 : startIndex+endIndex]
-}
-
-func removeQuotes(s string) string {
-	s = strings.TrimSpace(s)
-	if len(s) >= 2 && s[0] == '"' && s[len(s)-1] == '"' {
-		return s[1 : len(s)-1]
-	}
-	return s
+	return t
 }

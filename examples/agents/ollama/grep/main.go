@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/bit8bytes/gogantic/agents"
 	"github.com/bit8bytes/gogantic/llms/ollama"
@@ -27,8 +28,10 @@ func main() {
 		panic(err)
 	}
 
-	ctx := context.TODO()
-	r := runner.New(agent, 10, true)
+	ctx, cancel := context.WithTimeout(context.TODO(), time.Second*60)
+	defer cancel()
+
+	r := runner.New(agent, true)
 	if err := r.Run(ctx); err != nil {
 		panic(err)
 	}

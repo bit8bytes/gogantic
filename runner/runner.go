@@ -22,40 +22,42 @@ const (
 // runner executes an agent's Plan-Act loop.
 type runner struct {
 	agent             *agents.Agent
-	iterationLimit    int
 	printMessages     bool
 	lastPrintedMsgIdx int
 }
 
 // New creates a Runner with the given agent, iteration limit, and message printing option.
-func New(agent *agents.Agent, iterationLimit int, printMessages bool) *runner {
+func New(agent *agents.Agent, printMessages bool) *runner {
 	return &runner{
 		agent:             agent,
-		iterationLimit:    iterationLimit,
 		printMessages:     printMessages,
-		lastPrintedMsgIdx: -1,
+		lastPrintedMsgIdx: 0,
 	}
 }
 
 // Run executes the agent's Plan-Act loop until completion or iteration limit.
 func (r *runner) Run(ctx context.Context) error {
-	for i := 0; i < r.iterationLimit; i++ {
-		response, err := r.agent.Plan(ctx)
-		if err != nil {
-			return fmt.Errorf("planning failed: %w", err)
-		}
+RUN:
+	for {
+		select {
+		case <-ctx.Done():
+			break RUN
+		default:
+			response, err := r.agent.Plan(ctx)
+			if err != nil {
+				return fmt.Errorf("planning failed: %w", err)
+			}
 
-		if response.Finish {
+			if response.Finish {
+				return nil
+			}
+
+			r.agent.Act(ctx)
+
 			r.printNewMessages()
-			return nil
 		}
-
-		r.agent.Act(ctx)
-
-		r.printNewMessages()
 	}
-
-	return fmt.Errorf("iteration limit reached (%d iterations)", r.iterationLimit)
+	return fmt.Errorf("no final answer available")
 }
 
 func (r *runner) printNewMessages() {

@@ -10,16 +10,20 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"strings"
 
 	"github.com/bit8bytes/gogantic/agents/tools"
 	"github.com/bit8bytes/gogantic/inputs/roles"
 	"github.com/bit8bytes/gogantic/llms"
-	"github.com/bit8bytes/gogantic/outputs/jsonout"
 )
 
 type llm interface {
 	Generate(ctx context.Context, messages []llms.Message) (*llms.ContentResponse, error)
+}
+
+type store interface {
+	Add(ctx context.Context, msgs ...llms.Message) error
+	List(ctx context.Context) ([]llms.Message, error)
+	Clear(ctx context.Context) error
 }
 
 // Tool represents an action the agent can perform.
@@ -41,40 +45,41 @@ type parser interface {
 type Agent struct {
 	model       llm
 	tools       map[string]Tool
-	Messages    []llms.Message
+	History     store
 	actions     []Action
 	parser      parser
 	finalAnswer string
 }
 
-// New creates an agent with the given model and tools.
-// The agent is initialized with a ReAct system prompt.
-func New(model llm, tools []Tool) *Agent {
-	p := jsonout.NewParser[AgentResponse]()
-	t := toolNames(tools)
-
+// New creates an agent with the given model, tools, storage, and parser.
+// For the ReAct pattern, prefer NewReAct.
+func New(model llm, tools []Tool, storage store, p parser) *Agent {
 	return &Agent{
-		model:    model,
-		tools:    t,
-		Messages: buildReActPrompt(t, p.Instructions()),
-		parser:   p,
+		model:   model,
+		tools:   toolNames(tools),
+		History: storage,
+		parser:  p,
 	}
 }
 
 // Task sets the user's question or task for the agent to solve.
 // Call this before starting the Plan-Act loop.
-func (a *Agent) Task(prompt string) error {
-	a.Messages = append(a.Messages, llms.Message{
+func (a *Agent) Task(ctx context.Context, prompt string) error {
+	return a.History.Add(ctx, llms.Message{
 		Role:    roles.User,
 		Content: "Question: " + prompt,
 	})
-	return nil
 }
 
 // Plan calls the LLM to decide the next action or provide a final answer.
 // Returns Response.Finish=true when the task is complete.
 func (a *Agent) Plan(ctx context.Context) (*Response, error) {
-	generated, err := a.model.Generate(ctx, a.Messages)
+	history, err := a.History.List(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	generated, err := a.model.Generate(ctx, history)
 	if err != nil {
 		return nil, err
 	}
@@ -84,7 +89,7 @@ func (a *Agent) Plan(ctx context.Context) (*Response, error) {
 		return nil, fmt.Errorf("failed to parse agent response: %w", err)
 	}
 
-	a.addAssistantMessage(generated.Result)
+	a.addAssistantMessage(ctx, generated.Result)
 
 	if parsed.FinalAnswer != "" {
 		a.finalAnswer = parsed.FinalAnswer
@@ -119,7 +124,7 @@ func (a *Agent) Act(ctx context.Context) {
 func (a *Agent) handleAction(ctx context.Context, action Action) bool {
 	t, exists := a.tools[action.Tool]
 	if !exists {
-		a.addObservationMessage("The action " + action.Tool + " doesn't exist.")
+		a.addObservationMessage(ctx, "The action "+action.Tool+" doesn't exist.")
 		return false
 	}
 
@@ -127,11 +132,11 @@ func (a *Agent) handleAction(ctx context.Context, action Action) bool {
 		Content: action.ToolInput,
 	})
 	if err != nil {
-		a.addObservationMessage("Error: " + err.Error())
+		a.addObservationMessage(ctx, "Error: "+err.Error())
 		return false
 	}
 
-	a.addObservationMessage(observation.Content)
+	a.addObservationMessage(ctx, observation.Content)
 	return true
 }
 
@@ -146,34 +151,6 @@ func (a *Agent) Answer() (string, error) {
 		return "", errors.New("no final answer available")
 	}
 	return a.finalAnswer, nil
-}
-
-func buildReActPrompt(tools map[string]Tool, jsonInstructions string) []llms.Message {
-	var toolDescriptions strings.Builder
-	for _, t := range tools {
-		fmt.Fprintf(&toolDescriptions, "- %s: %s\n", t.Name(), t.Description())
-	}
-
-	return []llms.Message{
-		{
-			Role: roles.System,
-			Content: fmt.Sprintf(`
-You are an helpful agent. Answer questions using the available tools.
-Do not estimate or predict values. Use only values returned by tools.
-
-Available tools:
-%s
-%s
-
-Respond with a JSON object on each turn with these fields:
-- "thought": your reasoning about what to do next
-- "action": the exact tool name to call (empty string when giving final answer)
-- "action_input": the input to pass to the tool (empty string when giving final answer)
-- "final_answer": your final answer (empty string when calling a tool)
-
-Think step by step. Do not hallucinate.`, toolDescriptions.String(), jsonInstructions),
-		},
-	}
 }
 
 func toolNames(tools []Tool) map[string]Tool {

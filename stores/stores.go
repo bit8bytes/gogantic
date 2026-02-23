@@ -19,41 +19,6 @@ type Store interface {
 	Close() error
 }
 
-// Memory is a simple in-memory store backed by a slice.
-type Memory struct {
-	mu   sync.Mutex
-	msgs []llms.Message
-}
-
-// NewMemory returns a new in-memory store.
-func NewMemory() *Memory {
-	return &Memory{}
-}
-
-func (m *Memory) Add(_ context.Context, msgs ...llms.Message) error {
-	m.mu.Lock()
-	defer m.mu.Unlock()
-	m.msgs = append(m.msgs, msgs...)
-	return nil
-}
-
-func (m *Memory) List(_ context.Context) ([]llms.Message, error) {
-	m.mu.Lock()
-	defer m.mu.Unlock()
-	out := make([]llms.Message, len(m.msgs))
-	copy(out, m.msgs)
-	return out, nil
-}
-
-func (m *Memory) Clear(_ context.Context) error {
-	m.mu.Lock()
-	defer m.mu.Unlock()
-	m.msgs = nil
-	return nil
-}
-
-func (m *Memory) Close() error { return nil }
-
 // Opener defines the functional factory for creating a Store backed by a sql.DB.
 type Opener func(ctx context.Context, name string, db *sql.DB) (Store, error)
 

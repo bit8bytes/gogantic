@@ -4,7 +4,7 @@ package pipes
 
 import (
 	"context"
-	"log/slog"
+	"errors"
 
 	"github.com/bit8bytes/gogantic/llms"
 )
@@ -25,7 +25,6 @@ type Pipe[T any] struct {
 	messages []llms.Message
 	model    llm
 	parser   parser[T]
-	logger   *slog.Logger
 }
 
 // New creates a new Pipe with the given messages, model, and parser.
@@ -41,6 +40,10 @@ func New[T any](messages []llms.Message, model llm, parser parser[T]) *Pipe[T] {
 // message, generating a response from the model, and parsing the result into
 // a value of type T.
 func (pipe *Pipe[T]) Invoke(ctx context.Context) (*T, error) {
+	if len(pipe.messages) == 0 {
+		return nil, errors.New("pipe has no messages")
+	}
+
 	instructions := pipe.parser.Instructions()
 	pipe.messages[0].Content += " " + instructions
 

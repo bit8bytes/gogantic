@@ -112,7 +112,9 @@ func (oc *client) StreamContent(ctx context.Context, messages []llms.Message, ha
 	}
 	req.Header.Set("Content-Type", "application/json")
 
-	client := &http.Client{}
+	client := &http.Client{
+		Timeout: 240 * time.Second,
+	}
 	resp, err := client.Do(req)
 	if err != nil {
 		return fmt.Errorf("error sending request: %w", err)

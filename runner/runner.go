@@ -51,7 +51,9 @@ RUN:
 				return nil
 			}
 
-			r.agent.Act(ctx)
+			if err := r.agent.Act(ctx); err != nil {
+				return fmt.Errorf("action failed: %w", err)
+			}
 		}
 	}
 	return fmt.Errorf("no final answer available")

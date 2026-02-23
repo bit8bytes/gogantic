@@ -5,7 +5,7 @@ type Role string
 const (
 	System    Role = "system"
 	User      Role = "user"
-	Assistent Role = "assistent"
+	Assistant Role = "assistant"
 )
 
 func (r Role) String() string {

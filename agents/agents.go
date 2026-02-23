@@ -89,7 +89,9 @@ func (a *Agent) Plan(ctx context.Context) (*Response, error) {
 		return nil, fmt.Errorf("failed to parse agent response: %w", err)
 	}
 
-	a.addAssistantMessage(ctx, generated.Result)
+	if err := a.addAssistantMessage(ctx, generated.Result); err != nil {
+		return nil, fmt.Errorf("failed to store assistant message: %w", err)
+	}
 
 	if parsed.FinalAnswer != "" {
 		a.finalAnswer = parsed.FinalAnswer
@@ -112,32 +114,30 @@ func (a *Agent) Plan(ctx context.Context) (*Response, error) {
 
 // Act executes the tool chosen by Plan and adds the result as an observation.
 // Always call this after Plan (unless Plan returned Finish=true).
-func (a *Agent) Act(ctx context.Context) {
+func (a *Agent) Act(ctx context.Context) error {
 	for _, action := range a.actions {
-		if !a.handleAction(ctx, action) {
-			return
+		if err := a.handleAction(ctx, action); err != nil {
+			return err
 		}
 	}
 	a.clearActions()
+	return nil
 }
 
-func (a *Agent) handleAction(ctx context.Context, action Action) bool {
+func (a *Agent) handleAction(ctx context.Context, action Action) error {
 	t, exists := a.tools[action.Tool]
 	if !exists {
-		a.addObservationMessage(ctx, "The action "+action.Tool+" doesn't exist.")
-		return false
+		return a.addObservationMessage(ctx, "The action "+action.Tool+" doesn't exist.")
 	}
 
 	observation, err := t.Execute(ctx, tools.Input{
 		Content: action.ToolInput,
 	})
 	if err != nil {
-		a.addObservationMessage(ctx, "Error: "+err.Error())
-		return false
+		return a.addObservationMessage(ctx, "Error: "+err.Error())
 	}
 
-	a.addObservationMessage(ctx, observation.Content)
-	return true
+	return a.addObservationMessage(ctx, observation.Content)
 }
 
 func (a *Agent) clearActions() {

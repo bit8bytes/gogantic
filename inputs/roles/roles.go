@@ -7,3 +7,7 @@ const (
 	User      Role = "user"
 	Assistent Role = "assistent"
 )
+
+func (r Role) String() string {
+	return string(r)
+}

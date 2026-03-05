@@ -9,17 +9,12 @@ import (
 	_ "modernc.org/sqlite"
 )
 
-const Sqlite = "sqlite"
-
-func init() {
-	stores.Register(Sqlite, NewSqlite)
-}
-
 type sqliteStore struct {
 	db *sql.DB
 }
 
-func NewSqlite(ctx context.Context, name string, db *sql.DB) (stores.Store, error) {
+// New creates a Store backed by the provided *sql.DB.
+func New(ctx context.Context, db *sql.DB) (stores.Store, error) {
 	return &sqliteStore{db: db}, nil
 }
 

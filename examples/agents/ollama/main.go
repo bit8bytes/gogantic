@@ -73,8 +73,10 @@ func main() {
 	}
 
 	task := `
-		Find all types in this codebase that implement the parser interface.
-		For each type, show which package and file it is defined in.`
+		Analyze the current Go code base and evaluate its maintainability. Produce a short report.`
+	// task := `
+	// 	Find all types in this codebase that implement the parser interface.
+	// 	For each type, show which package and file it is defined in.`
 	if err := agent.Task(ctx, task); err != nil {
 		panic(err)
 	}

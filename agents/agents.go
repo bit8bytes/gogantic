@@ -11,9 +11,9 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/bit8bytes/gogantic/agents/tools"
 	"github.com/bit8bytes/gogantic/inputs/roles"
 	"github.com/bit8bytes/gogantic/llms"
+	"github.com/bit8bytes/gogantic/tools"
 )
 
 type llm interface {

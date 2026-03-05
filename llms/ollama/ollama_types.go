@@ -4,6 +4,10 @@ import (
 	"github.com/bit8bytes/gogantic/llms"
 )
 
+const (
+	JSON = "json"
+)
+
 type Model struct {
 	Model     string   `json:"model"`
 	Endpoint  string   `json:"endpoint"`

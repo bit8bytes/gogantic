@@ -50,7 +50,9 @@ Respond with a JSON object on each turn with these fields:
 - "thought": your reasoning about what to do next
 - "action": the exact tool name to call (empty string when giving final answer)
 - "action_input": the input to pass to the tool (empty string when giving final answer)
-- "final_answer": your final answer (empty string when calling a tool)
+- "final_answer": your final answer to the user — MUST be non-empty when you are done; empty string ONLY when calling a tool
+
+When you have enough information to answer, set "action" and "action_input" to "" and put a detailed answer based on your observations — MUST be non-empty when done; be thorough and include all relevant findings.
 
 Think step by step. Do not hallucinate.`, toolDescriptions.String(), jsonInstructions),
 		},

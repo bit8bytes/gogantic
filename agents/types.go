@@ -17,5 +17,6 @@ type Action struct {
 // Response indicates whether the agent loop should continue or finish.
 type Response struct {
 	Actions []Action
+	Thought string
 	Finish  bool
 }

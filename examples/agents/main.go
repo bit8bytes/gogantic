@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 	"time"
 
@@ -59,12 +60,12 @@ func main() {
 
 	// These tools are specifically designed for Golang.
 	tools := []agents.Tool{
-		tools.ListGoPackages{},
-		tools.ParseGoFile{},
-		tools.FindIdent{},
+		tools.ListDeclarations{},
 		tools.FindCalls{},
-		tools.FindImporters{},
-		tools.FindImplementors{},
+		tools.FindUsages{},
+		tools.GetFunctionSignature{},
+		tools.GetStructFields{},
+		tools.RunGoVet{},
 	}
 
 	agent, err := agents.NewReAct(ctx, model, tools, storage)
@@ -72,11 +73,7 @@ func main() {
 		panic(err)
 	}
 
-	task := `
-		Analyze the current Go code base and evaluate its maintainability. Produce a short report.`
-	// task := `
-	// 	Find all types in this codebase that implement the parser interface.
-	// 	For each type, show which package and file it is defined in.`
+	task := `Where is the NewReAct function called?`
 	if err := agent.Task(ctx, task); err != nil {
 		panic(err)
 	}
@@ -87,8 +84,9 @@ func main() {
 	}
 
 	finalAnswer, err := agent.Answer()
-	if err != nil {
-		panic(err)
+	if errors.Is(err, agents.ErrNoFinalAnswer) {
+		fmt.Println("No final answer found")
+		return
 	}
 	fmt.Println(finalAnswer)
 }

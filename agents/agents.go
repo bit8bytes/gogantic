@@ -16,6 +16,10 @@ import (
 	"github.com/bit8bytes/gogantic/tools"
 )
 
+var (
+	ErrNoFinalAnswer = errors.New("no final answer available")
+)
+
 type llm interface {
 	Generate(ctx context.Context, messages []llms.Message) (*llms.ContentResponse, error)
 }
@@ -89,27 +93,32 @@ func (a *Agent) Plan(ctx context.Context) (*Response, error) {
 		return nil, fmt.Errorf("failed to parse agent response: %w", err)
 	}
 
+	if parsed.FinalAnswer == "" && parsed.Action == "" {
+		if err := a.addAssistantMessage(ctx, generated.Result); err != nil {
+			return nil, fmt.Errorf("failed to store assistant message: %w", err)
+		}
+		if err := a.addObservationMessage(ctx, "Your last response was incomplete: it contained neither an action nor a final answer. Please continue: either call a tool or provide your final answer."); err != nil {
+			return nil, err
+		}
+		return &Response{Thought: parsed.Thought}, nil
+	}
+
 	if err := a.addAssistantMessage(ctx, generated.Result); err != nil {
 		return nil, fmt.Errorf("failed to store assistant message: %w", err)
 	}
 
 	if parsed.FinalAnswer != "" {
 		a.finalAnswer = parsed.FinalAnswer
-		return &Response{Finish: true}, nil
+		return &Response{Thought: parsed.Thought, Finish: true}, nil
 	}
 
-	if parsed.Action == "" {
-		return nil, errors.New("agent response contains neither a final answer nor an action")
+	action := Action{
+		Tool:      parsed.Action,
+		ToolInput: parsed.ActionInput,
 	}
+	a.actions = []Action{action}
 
-	a.actions = []Action{
-		{
-			Tool:      parsed.Action,
-			ToolInput: parsed.ActionInput,
-		},
-	}
-
-	return &Response{}, nil
+	return &Response{Thought: parsed.Thought, Actions: []Action{action}}, nil
 }
 
 // Act executes the tool chosen by Plan and adds the result as an observation.
@@ -148,7 +157,7 @@ func (a *Agent) clearActions() {
 // Only call this after Plan returns Finish=true.
 func (a *Agent) Answer() (string, error) {
 	if a.finalAnswer == "" {
-		return "", errors.New("no final answer available")
+		return "", ErrNoFinalAnswer
 	}
 	return a.finalAnswer, nil
 }

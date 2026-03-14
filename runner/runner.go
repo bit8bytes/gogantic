@@ -47,6 +47,15 @@ RUN:
 				return fmt.Errorf("planning failed: %w", err)
 			}
 
+			if r.printMessages {
+				if response.Thought != "" {
+					fmt.Printf("%sTHOUGHT:%s %s\n", cyan, reset, response.Thought)
+				}
+				for _, a := range response.Actions {
+					fmt.Printf("%sACTION:%s  %s(%s)\n", blue, reset, a.Tool, a.ToolInput)
+				}
+			}
+
 			if response.Finish {
 				return nil
 			}

@@ -6,7 +6,7 @@ import (
 	"context"
 	"errors"
 
-	"github.com/bit8bytes/gogantic/llms"
+	"github.com/bit8bytes/beago/llms"
 )
 
 type parser[T any] interface {

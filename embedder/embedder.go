@@ -3,7 +3,7 @@ package embedder
 import (
 	"context"
 
-	"github.com/bit8bytes/gogantic/llms"
+	"github.com/bit8bytes/beago/llms"
 )
 
 type llm interface {

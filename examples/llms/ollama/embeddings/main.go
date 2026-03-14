@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/bit8bytes/gogantic/inputs/prompts"
-	"github.com/bit8bytes/gogantic/llms/ollama"
+	"github.com/bit8bytes/beago/inputs/prompts"
+	"github.com/bit8bytes/beago/llms/ollama"
 )
 
 func main() {

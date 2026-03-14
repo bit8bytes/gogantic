@@ -1,6 +1,6 @@
 package llms
 
-import "github.com/bit8bytes/gogantic/inputs/roles"
+import "github.com/bit8bytes/beago/inputs/roles"
 
 type Message struct {
 	Role    roles.Role `json:"role"`

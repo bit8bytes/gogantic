@@ -4,8 +4,8 @@ import (
 	"context"
 	"database/sql"
 
-	"github.com/bit8bytes/gogantic/llms"
-	"github.com/bit8bytes/gogantic/stores"
+	"github.com/bit8bytes/beago/llms"
+	"github.com/bit8bytes/beago/stores"
 	_ "modernc.org/sqlite"
 )
 

@@ -3,8 +3,8 @@ package chats
 import (
 	"testing"
 
-	"github.com/bit8bytes/gogantic/inputs/roles"
-	"github.com/bit8bytes/gogantic/llms"
+	"github.com/bit8bytes/beago/inputs/roles"
+	"github.com/bit8bytes/beago/llms"
 )
 
 func TestNewChatPromptTemplate(t *testing.T) {

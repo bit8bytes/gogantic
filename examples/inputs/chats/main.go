@@ -3,9 +3,9 @@ package main
 import (
 	"fmt"
 
-	"github.com/bit8bytes/gogantic/inputs/chats"
-	"github.com/bit8bytes/gogantic/inputs/roles"
-	"github.com/bit8bytes/gogantic/llms"
+	"github.com/bit8bytes/beago/inputs/chats"
+	"github.com/bit8bytes/beago/inputs/roles"
+	"github.com/bit8bytes/beago/llms"
 )
 
 func main() {

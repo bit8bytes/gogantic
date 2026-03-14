@@ -7,7 +7,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/bit8bytes/gogantic/agents"
+	"github.com/bit8bytes/beago/agents"
 )
 
 const (

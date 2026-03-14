@@ -11,7 +11,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/bit8bytes/gogantic/llms"
+	"github.com/bit8bytes/beago/llms"
 )
 
 type client struct {

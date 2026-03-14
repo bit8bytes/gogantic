@@ -4,9 +4,9 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/bit8bytes/gogantic/inputs/chats"
-	"github.com/bit8bytes/gogantic/llms"
-	"github.com/bit8bytes/gogantic/llms/ollama"
+	"github.com/bit8bytes/beago/inputs/chats"
+	"github.com/bit8bytes/beago/llms"
+	"github.com/bit8bytes/beago/llms/ollama"
 )
 
 func main() {

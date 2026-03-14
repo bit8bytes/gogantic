@@ -6,9 +6,9 @@ import (
 	"os"
 	"strings"
 
-	"github.com/bit8bytes/gogantic/inputs/roles"
-	"github.com/bit8bytes/gogantic/llms"
-	"github.com/bit8bytes/gogantic/outputs/json"
+	"github.com/bit8bytes/beago/inputs/roles"
+	"github.com/bit8bytes/beago/llms"
+	"github.com/bit8bytes/beago/outputs/json"
 )
 
 // NewReAct creates an agent pre-configured for the ReAct pattern.

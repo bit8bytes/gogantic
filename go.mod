@@ -1,4 +1,4 @@
-module github.com/bit8bytes/gogantic
+module github.com/bit8bytes/beago
 
 go 1.25.7
 

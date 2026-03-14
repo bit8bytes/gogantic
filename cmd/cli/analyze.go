@@ -9,11 +9,11 @@ import (
 	"os"
 	"strings"
 
-	"github.com/bit8bytes/gogantic/agents"
-	"github.com/bit8bytes/gogantic/llms/ollama"
-	"github.com/bit8bytes/gogantic/runner"
-	"github.com/bit8bytes/gogantic/stores/moderncsqlite"
-	"github.com/bit8bytes/gogantic/tools"
+	"github.com/bit8bytes/beago/agents"
+	"github.com/bit8bytes/beago/llms/ollama"
+	"github.com/bit8bytes/beago/runner"
+	"github.com/bit8bytes/beago/stores/moderncsqlite"
+	"github.com/bit8bytes/beago/tools"
 )
 
 func analyze(ctx context.Context, db *sql.DB, wd string) error {

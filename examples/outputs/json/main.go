@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/bit8bytes/gogantic/outputs/json"
+	"github.com/bit8bytes/beago/outputs/json"
 )
 
 type joke struct {

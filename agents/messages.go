@@ -3,8 +3,8 @@ package agents
 import (
 	"context"
 
-	"github.com/bit8bytes/gogantic/inputs/roles"
-	"github.com/bit8bytes/gogantic/llms"
+	"github.com/bit8bytes/beago/inputs/roles"
+	"github.com/bit8bytes/beago/llms"
 )
 
 func (a *Agent) addAssistantMessage(ctx context.Context, content string) error {

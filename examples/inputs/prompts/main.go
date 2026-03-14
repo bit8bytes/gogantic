@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/bit8bytes/gogantic/inputs/prompts"
+	"github.com/bit8bytes/beago/inputs/prompts"
 )
 
 func main() {

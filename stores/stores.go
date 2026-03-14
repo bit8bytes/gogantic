@@ -3,7 +3,7 @@ package stores
 import (
 	"context"
 
-	"github.com/bit8bytes/gogantic/llms"
+	"github.com/bit8bytes/beago/llms"
 )
 
 // Store is the interface that wraps the basic message persistence methods.

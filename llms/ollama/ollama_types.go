@@ -1,7 +1,7 @@
 package ollama
 
 import (
-	"github.com/bit8bytes/gogantic/llms"
+	"github.com/bit8bytes/beago/llms"
 )
 
 const (

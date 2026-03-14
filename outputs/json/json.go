@@ -2,7 +2,7 @@
 //
 // It unmarshals raw JSON strings into typed Go structs and generates
 // instruction prompts that guide an LLM to produce valid JSON output.
-package jsonout
+package json
 
 import (
 	"encoding/json"

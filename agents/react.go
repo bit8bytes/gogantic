@@ -7,13 +7,13 @@ import (
 
 	"github.com/bit8bytes/gogantic/inputs/roles"
 	"github.com/bit8bytes/gogantic/llms"
-	"github.com/bit8bytes/gogantic/outputs/jsonout"
+	"github.com/bit8bytes/gogantic/outputs/json"
 )
 
 // NewReAct creates an agent pre-configured for the ReAct pattern.
 // It seeds the ReAct system prompt into storage.
 func NewReAct(ctx context.Context, model llm, tools []Tool, storage store) (*Agent, error) {
-	p := jsonout.NewParser[AgentResponse]()
+	p := json.NewParser[AgentResponse]()
 	t := toolNames(tools)
 
 	msgs := buildReActPrompt(t, p.Instructions())

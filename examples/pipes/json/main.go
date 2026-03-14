@@ -8,7 +8,7 @@ import (
 	"github.com/bit8bytes/gogantic/inputs/roles"
 	"github.com/bit8bytes/gogantic/llms"
 	"github.com/bit8bytes/gogantic/llms/ollama"
-	"github.com/bit8bytes/gogantic/outputs/jsonout"
+	"github.com/bit8bytes/gogantic/outputs/json"
 	"github.com/bit8bytes/gogantic/pipes"
 )
 
@@ -53,7 +53,7 @@ Return only the result.
 
 	client := ollama.New(model)
 
-	parser := jsonout.NewParser[translation]()
+	parser := json.NewParser[translation]()
 
 	pipe := pipes.New(messages, client, parser)
 	// Invoke is going to add the the parser instructions to the prompt.

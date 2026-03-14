@@ -1,4 +1,4 @@
-package jsonout
+package json
 
 import (
 	"testing"

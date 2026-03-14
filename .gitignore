@@ -26,7 +26,4 @@ go.work.sum
 .env
 
 /tmp
-
-# db
-analyze.db
-agent.db
+/bin

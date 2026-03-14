@@ -20,3 +20,12 @@ confirm:
 .PHONY: install
 install: confirm
 	go mod download
+
+# ==================================================================================== #
+# PRODUCTION
+# ==================================================================================== #
+
+## build: build the cli
+.PHONY: build-cli
+build-cli: confirm
+	go build -ldflags='-s' -o=./bin/cli/beago ./cmd/cli

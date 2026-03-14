@@ -23,7 +23,7 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*240)
 	defer cancel()
 
-	db, err := setupDatabase(ctx, "analyze.db")
+	db, err := setupDatabase(ctx, ":memory:")
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "database setup: %v\n", err)
 		os.Exit(1)

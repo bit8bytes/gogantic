@@ -7,6 +7,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/bit8bytes/gogantic/agents"
 	"github.com/bit8bytes/gogantic/llms/ollama"
@@ -40,14 +41,8 @@ func analyze(ctx context.Context, db *sql.DB, wd string) error {
 		Format:  ollama.JSON,
 	})
 
-	// These goTools are specifically designed for Golang.
 	goTools := []agents.Tool{
-		tools.GitDiff{},
-		tools.ListDeclarations{},
-		tools.FindCalls{},
-		tools.FindUsages{},
-		tools.GetFunctionSignature{},
-		tools.GetStructFields{},
+		tools.ReadFile{},
 		tools.RunGoBuild{},
 		tools.RunGoVet{},
 	}
@@ -57,33 +52,7 @@ func analyze(ctx context.Context, db *sql.DB, wd string) error {
 		return fmt.Errorf("agent init: %w", err)
 	}
 
-	task := fmt.Sprintf(`You are a Go code reviewer. Your job is to check if newly written code follows the same style and best practices as the rest of this codebase.
-
-Project root: %s
-Target file: %s
-
-Follow these steps:
-1. Call GitDiff with the target file path to get the exact changes.
-2. Call ListDeclarations with the project root to find comparable existing code.
-3. Call GetFunctionSignature on functions from the diff and on similar functions found in step 2.
-4. Compare them. Report ONLY concrete deviations in: error handling style, naming conventions, doc comments, receiver naming, function signature shape.
-
-Format your final answer exactly like this:
-
-REVIEW <target file>
-
-No issues found.
-
-Or if there are deviations:
-
-REVIEW <target file>
-
-ISSUE: <short title>
-  File:     <file>:<line>
-  Expected: <what the codebase does>
-  Found:    <what the new code does>
-
-Report only concrete deviations. No prose outside this format.`, wd, targetPath)
+	task := buildTask(wd, targetPath)
 
 	if err := agent.Task(ctx, task); err != nil {
 		return fmt.Errorf("task: %w", err)
@@ -105,4 +74,58 @@ Report only concrete deviations. No prose outside this format.`, wd, targetPath)
 
 	fmt.Println(finalAnswer)
 	return nil
+}
+
+func buildTask(wd, targetPath string) string {
+	cfg, _ := load(wd)
+	layer := cfg.MatchLayer(wd, targetPath)
+
+	var sb strings.Builder
+
+	fmt.Fprintf(&sb, `You are a Go code reviewer helping a junior developer fix issues before submitting a PR.
+
+Project root: %s
+Target file: %s
+
+Steps:
+1. Call ReadFile on the target file.
+2. Call RunGoBuild on the project root to catch compilation errors.
+3. Call RunGoVet on the project root to catch common bugs.
+4. Call RunLinter on the project root to catch style and correctness issues.
+`, wd, targetPath)
+
+	if layer != nil {
+		fmt.Fprintf(&sb, `5. Check the file content from step 1 against these architectural rules for the "%s" layer:
+
+   - %s
+
+6. Report all findings in the format below.
+`, layer.Name, strings.Join(layer.Rules, "\n   - "))
+	} else {
+		sb.WriteString("5. Report all findings in the format below.\n")
+	}
+
+	sb.WriteString(`
+Explain each issue clearly so a junior developer understands what to fix and why.
+
+Format your final answer exactly like this:
+
+REVIEW <target file>
+
+No issues found.
+
+Or if there are issues:
+
+REVIEW <target file>
+
+ISSUE: <short title>
+  File:     <file>:<line>
+  Rule:     <rule name or "style">
+  Found:    <what the code does>
+  Expected: <what it should do>
+  Fix:      <concrete suggestion>
+
+Only report real findings from the tools. No invented issues.`)
+
+	return sb.String()
 }

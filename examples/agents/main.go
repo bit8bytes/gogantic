@@ -60,11 +60,6 @@ func main() {
 
 	// These tools are specifically designed for Golang.
 	tools := []agents.Tool{
-		tools.ListDeclarations{},
-		tools.FindCalls{},
-		tools.FindUsages{},
-		tools.GetFunctionSignature{},
-		tools.GetStructFields{},
 		tools.RunGoVet{},
 	}
 

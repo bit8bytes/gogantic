@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 
@@ -23,7 +24,11 @@ func Extract() pipe.Handler {
 		}
 		blob := extractJSON(data)
 		if blob == nil {
-			fmt.Fprintf(w, "Generated JSON is malformed, try again.\n")
+			fmt.Fprintf(w, "Generated JSON is malformed: no JSON object found, try again.\n")
+			return nil
+		}
+		if msg := decodeError(blob); msg != "" {
+			fmt.Fprintf(w, "Generated JSON is malformed: %s, try again.\n", msg)
 			return nil
 		}
 		_, err = w.Write(blob)
@@ -48,6 +53,24 @@ func Pretty(w io.Writer) pipe.Handler {
 		_, err = w2.Write(data)
 		return err
 	})
+}
+
+func decodeError(data []byte) string {
+	var v any
+	dec := json.NewDecoder(bytes.NewReader(data))
+	if err := dec.Decode(&v); err != nil {
+		var syntaxErr *json.SyntaxError
+		var typeErr *json.UnmarshalTypeError
+		switch {
+		case errors.As(err, &syntaxErr):
+			return fmt.Sprintf("syntax error at character %d", syntaxErr.Offset)
+		case errors.As(err, &typeErr):
+			return fmt.Sprintf("wrong type for field %q", typeErr.Field)
+		default:
+			return err.Error()
+		}
+	}
+	return ""
 }
 
 func extractJSON(data []byte) []byte {
